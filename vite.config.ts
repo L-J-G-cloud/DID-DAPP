@@ -21,6 +21,9 @@ function pathResolve(dir: string) {
 const Timestamp = new Date().getTime()
 // https://vitejs.dev/config/
 export default defineConfig({
+  optimizeDeps: {
+    include: ['@reown/appkit']
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src')
@@ -91,7 +94,8 @@ export default defineConfig({
     proxy: {
       '/api': {
         // target: 'http://129.226.95.28:9007',   //测试代理接口
-        target: 'http://54.254.138.89:9007',         //正式代理接口
+        // target: 'http://54.254.138.89:9007',         //正式代理接口
+        target: 'http://54.255.106.99:8080',         //正式代理接口
         changeOrigin: true
       }
     }

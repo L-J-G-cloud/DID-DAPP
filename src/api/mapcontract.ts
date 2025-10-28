@@ -1,7 +1,8 @@
 import erc20ABI from '../abi/erc20-token.json'
 import { ethers, utils } from 'ethers'
 import addressConfigData from '../abi/contract-address.json'
-// import ForceAbi from '../abi/Force_New.json'
+import DIDMiningPoolAbi from '../abi/DIDMiningPool.json'
+import depositDIDAbi from '../abi/DepositDID.json'
 import ForceAbi from '../abi/F_New_Force.json'
 import stakingAbi from '../abi/Staking.json'
 import badgeAbi from '../abi/comtyBadge.json'
@@ -10,7 +11,7 @@ import { useStore } from "../store/store"
 import { showFailToast } from 'vant'
 import { showLoadingToast, closeToast ,showToast} from 'vant'
 import i18n from '../plugin/i18n';
-import fail from "@/assets/imgs/home/fail.png";
+import fail from "@/assets/imgs/identitycasting/fail.png";
 declare global {
   interface Window {
     ethereum: any
@@ -81,7 +82,6 @@ export async function approval(contrctAddress: string, from: string, to: string,
       from: from,
       gasLimit: '1000000',
     })
-
     await res.wait()
     if (successCb) {
       successCb()
@@ -220,21 +220,38 @@ export async function getPayTokenPrice() {
   return res
 }
 
+//  start ----- 
 
-//购买
-export async function buy(params: any) {
-  // const blcAmount = decimalParseToBigNumber(params.blcAmount, 18).toString();
-  const {blcAmount,type} = params
-  console.log(blcAmount,type,'amount')
-  const contractAddress = await getContractAddress('Force');
-  const contract = await getContract(contractAddress, ForceAbi);
-  const res = await contract.pay(blcAmount,type,{
-    gasLimit: '300000',
+//购买算力
+export async function buyPower(params: any) {
+  const {usdt,poolId,type} = params;
+  const contractAddress = await getContractAddress('DIDPool');
+  const contract = await getContract(contractAddress, DIDMiningPoolAbi);
+  const res = await contract.buyPower(usdt,poolId,type,{
+    gasLimit: '500000',
   });
   const hash = res.hash;
   await res.wait();
   return hash;
 }
+
+
+// 质押DID到DepositDID合约
+export async function depositDID(params: any) {
+  let {amount,durationDays} = params;
+  amount = decimalParseToBigNumber(amount, 18).toString();
+  console.log(amount,durationDays,'amount,durationDays')
+  const contractAddress = await getContractAddress('DepositDID');
+  const contract = await getContract(contractAddress, depositDIDAbi);
+  const res = await contract.deposit(amount,durationDays,{
+    gasLimit: '1000000',
+  });
+  const hash = res.hash;
+  await res.wait();
+  return hash;
+}
+
+//end
 
 export async function getPayRatioListLength() { 
   const contractAddress = await getContractAddress('Force');

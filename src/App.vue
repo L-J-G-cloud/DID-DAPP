@@ -1,13 +1,7 @@
 <script setup>
-import Home from './view/home/index.vue'
-import { WalletConnet } from './plugin/walletconnet'
 import { useRoute } from 'vue-router'
-import { isPc } from '@/utils'
 import { useStore } from './store/store'
 import useLocale from './plugin/useLocale'
-const pc = isPc()
-const route = useRoute()
-const showLeft = true
 const store = useStore()
 const { changeLocal } = useLocale()
 const currentVersion = ref(localStorage.getItem('app_version') || '')
@@ -62,7 +56,7 @@ onMounted(() => {
 .view {
   width: 100vw;
   min-height: 100vh;
-  background-color: #0A0809;
+  background-color: #1E1F25;
   background-size: 100% 100%;
 }
 </style>

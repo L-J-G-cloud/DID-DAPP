@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang='ts'>
-import empty from '@/assets/imgs/home/empty-record.png'
+import empty from '@/assets/imgs/identitycasting/empty-record.png'
 import {reactive,ref} from 'vue'
 
 </script>

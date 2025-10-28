@@ -4,8 +4,17 @@ import { storeToRefs } from 'pinia';
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'Home',
-    component: () => import('@/view/home/index.vue')
+    redirect: '/dashboard'
+  },
+  {
+    path: '/identitycasting',
+    name: 'Identitycasting',
+    component: () => import('@/view/identitycasting/index.vue')
+  },
+  {
+    path: '/casting',
+    name: 'casting',
+    component: () => import('@/view/identitycasting/components/Identity/casting.vue')
   },
   {
     path: '/register',
@@ -17,6 +26,51 @@ const routes: Array<RouteRecordRaw> = [
     name: 'donor',
     component: () => import('@/view/donor/index.vue')
   },
+  // {
+  //   path: '/pledge-did',
+  //   name: 'pledge-did',
+  //   component: () => import('@/view/identitycasting/components/PledgeDID/index.vue')
+  // },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: () => import('@/view/dashboard/index.vue')
+  },
+  {
+    path: '/gas',
+    name: 'gas',
+    component: () => import('@/view/identitycasting/components/Identity/gas.vue')
+  },
+  {
+    path: '/withdrawal',
+    name: 'withdrawal',
+    component: () => import('@/view/dashboard/withdrawal.vue')
+  },
+  {
+    path: '/pledge-did',
+    name: 'pledge',
+    component: () => import('@/view/identitycasting/components/didpledge/pledge.vue')
+  },
+  {
+    path: '/valcontribution-details/:address?',
+    name: 'valcontribution-details',
+    component: () => import('@/view/identitycasting/components/valcontribution/details.vue')
+  },
+  {
+    path: '/valcontribution-plusedetails/:address?',
+    name: 'valcontribution-plusedetails',
+    component: () => import('@/view/identitycasting/components/valcontribution/plusedetails.vue')
+  },
+  {
+    path: '/inviterecord/:address?',
+    name: 'inviterecord',
+    component: () => import('@/view/identitycasting/components/invite/inviterecord.vue')
+  },
+  {
+    path: '/product',
+    name: 'product',
+    component: () => import('@/view/identitycasting/components/product/index.vue')
+  }
 ]
 
 const router = createRouter({   
@@ -28,9 +82,9 @@ router.beforeEach((to, from, next) => {
  
   const store = useStore()
   console.log(store.is_reg,store.token)
-  if(to.path!=='/'&&to.path!=='/node-sub'&&to.path!=='/registrationform'&&to.path!=='/donor'&&store.token){
-    next('/');
-  }
+  // if(to.path!=='/'&&to.path!=='/node-sub'&&to.path!=='/registrationform'&&to.path!=='/donor'&&store.token){
+  //   next('/');
+  // }
   next();
 })
 export default router

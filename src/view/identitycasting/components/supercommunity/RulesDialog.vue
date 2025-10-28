@@ -1,0 +1,169 @@
+<template>
+    <div class="rules-dialog-container">
+        <van-dialog v-model:show="show" class="dialog-box" :z-index="100" :showConfirmButton="false"
+            :closeOnClickOverlay="true">
+            <!-- 弹窗内容 -->
+            <template #default>
+                <div class="header plr-1">
+                    <div class="title-line d-flex justify-content-between align-items-center">
+                        <div class="title">
+                            <span class="left-icon"></span>
+                            <span class="mr-2">{{ t('super_community_rules') }}</span>
+                        </div>
+                        <img class="close-img" src="@/assets/imgs/identitycasting/close.png" alt="" @click="handleClickCancel" />
+                    </div>
+                </div>
+                <div class="content plr-1">
+                    <div class="content-box">
+                        <ul>
+                            <li>{{ t('rules_intro') }}</li>
+                            <li>{{ t('rules_upgrade_way') }}</li>
+                            <li>{{ t('rules_upgrade_rule') }}</li>
+                            <li :class="['content-box-item'] ">
+                                <div :class="[ store.lang === 'en' ? 'en-box-item':'']">
+                                    <img src="@/assets/imgs/badges/rules_badge.png" alt="">
+                                    <p class="text-center">{{ t('rules_country_badge') }}</p>
+                                </div>
+                                <img src="@/assets/imgs/badges/rules_arr.png" alt="" class="arr-img">
+                                <div>
+                                    <img src="@/assets/imgs/badges/rules_badge_3.png" alt="">
+                                    <p class="text-center">{{ t('rules_continent_badge') }}</p>
+                                </div>
+                                <img src="@/assets/imgs/badges/rules_arr.png" alt="" class="arr-img">
+                                <div>
+                                    <img src="@/assets/imgs/badges/rules_badge_2.png" alt="">
+                                    <p class="text-center"> {{ t('rules_global_badge') }}</p>
+                                </div>
+                            </li>
+                            <li class="detail-text">{{ t('rules_detail_1') }}</li>
+                            <li class="detail-text">{{ t('rules_detail_2') }}</li>
+                            <li class="detail-text">{{ t('rules_detail_3') }}</li>
+                            <li>{{ t('rules_reward') }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </template>
+        </van-dialog>
+    </div>
+
+
+</template>
+
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+import { useStore } from '@/store/store'
+const store = useStore()
+    const {
+    t
+} = useI18n();
+const show = defineModel<boolean>("show");
+
+const emit = defineEmits(['update:visible']);
+const handleClickCancel = () => {
+    emit('update:visible', false);
+};
+</script>
+
+<style scoped lang="scss">
+.rules-dialog-container {
+    :deep(.van-dialog) {
+        padding: .7rem .5rem 0;
+        width: 95%;
+        top: 50%;
+        max-height: 90vh;
+        overflow-y: scroll;
+        max-width: 400px;
+        border-radius: .38rem;
+        border: 1px solid #2C3436;
+        background-color: #090909;
+    }
+}
+
+
+.header {
+    padding: 0.2rem 0 .5rem 0;
+    border-bottom: 1px solid #212225;
+    padding-bottom: 0.5rem;
+    .title {
+        display: flex;
+        align-items: center;
+        line-height: 1;
+    }
+}
+
+.content {
+    padding: 0.56rem;
+    font-size: .88rem;
+    color: #B2B2B2;
+}
+
+.close-img {
+    width: 1rem;
+    height: 1rem;
+}
+
+.left-icon {
+    display: inline-block;
+    width: .31rem;
+    height: 1rem;
+    margin-right: .44rem;
+    background-color: #FF3F3F;
+    border-radius: .19rem;
+}
+
+.content-box-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+
+    div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    img {
+        width: 1.88rem;
+        height: 1.88rem;
+    }
+
+    .arr-img {
+        width: 1.15rem;
+        height: 1.15rem;
+    }
+
+}
+.en-box-item {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    p {
+        text-align: center;
+    }
+}
+
+.content-box {
+    li {
+        margin-bottom: .7rem;
+    }
+
+    .detail-text {
+        position: relative;
+        padding-left: .8rem;
+        line-height: 1.2rem;
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: 0.2rem;
+            top: .4rem;
+            width: .3rem;
+            height: .3rem;
+            background-color: #FF3F3F;
+            border-radius: 50%;
+        }
+    }
+}
+</style>

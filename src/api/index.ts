@@ -3,7 +3,7 @@ import {request} from '../utils/axios'
 // 获取签名数据
 export function getSignData() {
     return request({
-      url: '/user/getSignData',
+      url: '/user/login/getSignData',
       method: 'post',
     })
 }
@@ -12,7 +12,7 @@ export function getSignData() {
 // 登录
 export function login(data:object) {
     return request({
-      url: '/user/login',
+      url: '/user/login/login',
       method: 'post',
       data,
     })
@@ -21,11 +21,108 @@ export function login(data:object) {
 // 判断是否注册
 export function isRegister(data:object) {
   return request({
-    url: '/user/isRegister',
+    url: '/user/login/isRegister',
     method: 'post',
     data,
   })
 }
+
+/----- DID start -----/
+
+//获取用户余额及节点锁仓did信息
+export function getUserBalance(data?:object) {
+  return request({
+    url: '/asset/asset/getUserBalance',
+    method: 'post',
+    data,
+  })
+}
+
+//获取用户流水
+export function getRecordList(data:object) {
+  return request({
+    url: '/asset/asset/getRecordList',
+    method: 'post',
+    data,
+  })
+}
+
+//获取直推列表
+export function getDirectRecommendationUserList(data:object) {
+  return request({
+    url: '/user/user/getDirectRecommendationUserList',
+    method: 'post',
+    data,
+  })
+}
+
+//获取用户信息
+export function getUserData(data?:object) {
+  return request({
+    url: '/user/user/getUserData',
+    method: 'post',
+    data,
+  })
+}
+
+
+//购买算力
+export function buyDIDPower(data:object) {
+  return request({
+    url: '/power/power/buyPower',
+    method: 'post',
+    data,
+  })
+}
+
+
+//算力入金记录
+export function powerList(data:object) {
+  return request({
+    url: '/power/power/powerList',
+    method: 'post',
+    data,
+  })
+}
+
+
+//身份铸造记录
+export function buyPowerRecord(data:object) {
+  return request({
+    url: '/scan/data/buyPowerRecord',
+    method: 'post',
+    data,
+  })
+}
+
+//兑换码兑换
+export function exchange(data:object) {
+  return request({
+    url: '/power/exchange/exchange',
+    method: 'post',
+    data,
+  })
+}
+
+//兑换码兑换记录
+export function exchangeList(data:object) {
+  return request({
+    url: '/power/exchange/exchangeList',
+    method: 'post',
+    data,
+  })
+}
+
+//算力明细
+export function powerDetail(data:object) {
+  return request({
+    url: '/power/data/powerDetail',
+    method: 'post',
+    data,
+  })
+}
+
+/----- DID end -----/
 
 
 // 质押赎回
@@ -74,44 +171,44 @@ export function getDepositConfig(data:object) {
 }
 
 
-// 获取用户流水记录
-export function getRecordList(data:object) {
-  return request({
-    url: '/asset/getRecordList',
-    method: 'post',
-    data,
-  })
-}
+// // 获取用户流水记录
+// export function getRecordList(data:object) {
+//   return request({
+//     url: '/asset/getRecordList',
+//     method: 'post',
+//     data,
+//   })
+// }
 
-// 获取用户余额
-export function getUserBalance() {
-  return request({
-    url: '/asset/getUserBalance',
-    method: 'post'
-  })
-}
+// // 获取用户余额
+// export function getUserBalance() {
+//   return request({
+//     url: '/asset/getUserBalance',
+//     method: 'post'
+//   })
+// }
 
-// 提现
-export function withdrawal(data:object) {
-  return request({
-    url: '/asset/withdrawal',
-    method: 'post',
-    data,
-  })
-}
+// // 提现
+// export function withdrawal(data:object) {
+//   return request({
+//     url: '/asset/withdrawal',
+//     method: 'post',
+//     data,
+//   })
+// }
 
 // 获取用户信息
-export function getUserData() {
-  return request({
-    url: '/user/getUserData',
-    method: 'post'
-  })
-}
+// export function getUserData() {
+//   return request({
+//     url: '/user/getUserData',
+//     method: 'post'
+//   })
+// }
 
 // 注册
 export function register(data:object) {
   return request({
-    url: '/user/register',
+    url: '/user/login/register',
     method: 'post',
     data,
   })
@@ -125,14 +222,14 @@ export function myInviteDetail() {
   })
 }
 
-// 我的邀请记录列表
-export function getDirectRecommendationUserList(data:object) {
-  return request({
-    url: '/user/getDirectRecommendationUserList',
-    method: 'post',
-    data,
-  })
-}
+// // 我的邀请记录列表
+// export function getDirectRecommendationUserList(data:object) {
+//   return request({
+//     url: '/user/getDirectRecommendationUserList',
+//     method: 'post',
+//     data,
+//   })
+// }
 
 // 获取节点超级节点推广记录
 export function incomeRecord(data:object) {
@@ -176,7 +273,7 @@ export function delSuperNode(data:object) {
 // 获取系统维修状态
 export function getSystemStatus(data?:object) {
   return request({
-    url: '/system/getSystemStatus',
+    url: '/system/system/systemStatus',
     method: 'post',
     data
   })
@@ -231,6 +328,15 @@ export function withdrawalRelease(data:object) {
     url: '/asset/withdrawalRelease',
     method: 'post',
     data
+  })
+}
+
+// 提现
+export function withdrawal(data:object) {
+  return request({
+    url: '/asset/withdrawal',
+    method: 'post',
+    data,
   })
 }
 
@@ -337,7 +443,7 @@ export function getSystemAddressBalance() {
 // 系统在维护，白名单
 export function getAddressWhiteList(data:object) {
   return request({
-    url: '/system/addressWhiteList',
+    url: '/system/system/addressWhiteList',
     method: 'post',
     data
   })

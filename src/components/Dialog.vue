@@ -1,6 +1,6 @@
 <template>
   <div class="warp" v-if="showDialog" @click=close>
-            <div class="dialog" @click.stop="open">
+            <div class="dialog" @click.stop>
                 <slot></slot>
             </div>    
         </div>

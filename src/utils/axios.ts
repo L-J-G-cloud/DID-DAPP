@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig } from 'axios'
 import router from '../router'
 import i18n from '../plugin/i18n'
 import { useStore } from "../store/store"
-import fail from "@/assets/imgs/home/fail.png";
+import fail from "@/assets/imgs/identitycasting/fail.png";
 import {showLoadingToast,showFailToast,closeToast} from 'vant'
 import store from '@/store'
 // 创建axios实例
@@ -71,6 +71,7 @@ service.interceptors.response.use(
          * code为非20000是抛错 可结合自己业务进行修改
          */
         // endLoading();
+        closeToast();
         if(store.isLoad) {
             closeToast();
         }
@@ -109,9 +110,20 @@ service.interceptors.response.use(
     },
     (error: any) => {
         let msg = error;
-        if(error.includes('timeout of')) {
-            msg = i18n.global.t('timeout') 
+        // if(error.includes('timeout of')) {
+        //     msg = i18n.global.t('timeout') 
+        // }
+        
+        // 处理速率限制错误
+        if(error.response && error.response.status === 429) {
+            msg = i18n.global.t('rateLimited') || '请求过于频繁，请稍后再试'
         }
+        
+        // 处理网络错误
+        if(error.code === 'NETWORK_ERROR' || error.message?.includes('Network Error')) {
+            msg = i18n.global.t('networkError') || '网络连接失败，请检查网络'
+        }
+        
         showFailToast({
             icon:fail, 
             message:msg,

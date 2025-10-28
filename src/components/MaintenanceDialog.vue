@@ -10,7 +10,7 @@
       :lockScroll="true"
       :closeOnPopstate="false"
     >
-        <img src="@/assets/imgs/home/Maintenance.png" alt="" srcset="" class="w-40 mb-3">
+        <img src="@/assets/imgs/identitycasting/Maintenance.png" alt="" srcset="" class="w-40 mb-3">
         <p class="text-sm leading-4 text-center">{{t('SystemMaintenance')}}</p>
         <template #footer> </template>
     </van-dialog>

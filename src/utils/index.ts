@@ -4,8 +4,8 @@ import { Decimal } from 'decimal.js'
 import moment from 'moment'
 import { showLoadingToast, closeToast, showToast } from 'vant'
 import { useStore } from '../store/store'
-import success from '@/assets/imgs/home/success.png'
-import fail from '@/assets/imgs/home/fail.png'
+import success from '@/assets/imgs/identitycasting/success.png'
+import fail from '@/assets/imgs/identitycasting/fail.png'
 import i18n from '../plugin/i18n';
 
 export function showToastIcon(text: string, flag: string, duration = 3000) {

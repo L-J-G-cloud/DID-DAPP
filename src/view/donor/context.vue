@@ -1,7 +1,7 @@
 <template>
     <div class="donor-container">
         <div class="donor-header F-Bold">
-            <img src="@/assets/imgs/home/back.png" alt="" class="back-icon" @click="$router.back()">
+            <img src="@/assets/imgs/identitycasting/back.png" alt="" class="back-icon" @click="$router.back()">
             <span>{{ t('Donor') }}</span>
         </div>
         <div class="donor-content">
@@ -82,11 +82,11 @@ import { showToast, showConfirmDialog, showLoadingToast, closeToast } from 'vant
 import { depositList, businessDetail ,businessDeposit, withdraw} from '@/api';
 import { getTokenBalance, getTokenAllowBalance, getContractAddress, getPayTokenAddress, approval, getFCPrice, stakingFC ,decimalParseToBigNumber, withdrawBack} from '@/api/mapcontract';
 import Decimal from 'decimal.js';
-import success from "@/assets/imgs/home/success.png";
-import fail from "@/assets/imgs/home/fail.png";
+import success from "@/assets/imgs/identitycasting/success.png";
+import fail from "@/assets/imgs/identitycasting/fail.png";
 import { clearZoo, decimalParseToNumber, showLoading, closeToastLoading, showToastIcon, getdata, formatDecimal } from '@/utils';
-import arr_down from '@/assets/imgs/home/d_arr_down.png'
-import arr_up from '@/assets/imgs/home/d_arr_up.png'
+import arr_down from '@/assets/imgs/identitycasting/d_arr_down.png'
+import arr_up from '@/assets/imgs/identitycasting/d_arr_up.png'
 const store = useStore()
 const account = ref(store.account)
 const { t } = useI18n()
@@ -381,7 +381,7 @@ const getRecordList = async (type=0) => {
     padding: 70px 15px;
     width: 100%;
     height: 100%;
-    background: url('@/assets/imgs/home/donor_bg.png') no-repeat center 100px;
+    background: url('@/assets/imgs/identitycasting/donor_bg.png') no-repeat center 100px;
     background-size: 100% auto;
     max-width: 500px;
     margin: 0 auto;
@@ -435,7 +435,7 @@ const getRecordList = async (type=0) => {
         align-items: center;
         margin: 28px 0 7px;
         padding: 17px;
-        background-color: #0A0809;
+        background-color: #1E1F25;
         border: 1px solid #1D1E1F;
         border-radius: 6px;
 
@@ -453,7 +453,7 @@ const getRecordList = async (type=0) => {
 
     .donor-action {
         padding: 10px;
-        background-color: #0A0809;
+        background-color: #1E1F25;
         border: 1px solid #1D1E1F;
         border-radius: 6px;
 

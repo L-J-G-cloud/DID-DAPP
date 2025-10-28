@@ -84,7 +84,7 @@ async function handleChainChanged() {
       message: i18n.global.t('okchian'),
       theme: 'round-button',
       messageAlign: 'center',
-      confirmButtonColor: '#CF1A1B',
+      confirmButtonColor: '#1DCC89',
       confirmButtonText: i18n.global.t('Ok'),
       className:'chian_tip'
     }).then(() => {
@@ -135,7 +135,17 @@ async function handleAccountsChanged(accounts: string | any[]) {
   closeToast();
 }
 
+// 签名防抖标志
+let isSigning = false;
+
 export async function getSignature(address: string, isReg: Boolean) {
+  // 防止重复签名
+  if (isSigning) {
+    console.log('正在签名中，请稍候...');
+    return;
+  }
+  
+  isSigning = true;
   const store = useStore()
   store.is_sign = true;
   try {
@@ -157,6 +167,7 @@ export async function getSignature(address: string, isReg: Boolean) {
     const signature = await signer.signMessage(data.data.random);//获取签名后的数据
     let result = null;
     store.is_sign = false;
+    isSigning = false;
     if (store.referrer && !isReg) {
       result = await register({ //拿签名数据去注册
         referrer: store.referrer,
@@ -199,6 +210,7 @@ export async function getSignature(address: string, isReg: Boolean) {
     }
   } catch (error) {
     closeToast();
+    isSigning = false;
     store.exit();
     console.log('获取签名失败',error)
   }
@@ -219,8 +231,19 @@ export async function getSignature(address: string, isReg: Boolean) {
 // any buttons the user can click to initiate the request.
 // MetaMask will reject any additional requests while the first is still
 // pending.
+// 防抖标志
+let isConnecting = false;
+
 //连接钱包功能
 export async function connect(call?:any) {
+  // 防止重复连接
+  if (isConnecting) {
+    console.log('正在连接中，请稍候...');
+    return;
+  }
+  
+  isConnecting = true;
+  
   const chainId = import.meta.env.MODE == 'development' ? '0x61' : '0x38';
   try {
     await window.ethereum.request({
@@ -240,7 +263,10 @@ export async function connect(call?:any) {
   
   
   const flag = await handleChainChanged();
-  if (!flag) return;
+  if (!flag) {
+    isConnecting = false;
+    return;
+  }
   try {
     window.ethereum
       .request({
@@ -254,9 +280,11 @@ export async function connect(call?:any) {
         if(call) {
           call();
         }
+        isConnecting = false;
       })
       .catch((err: { code: number }) => {
         closeToast();
+        isConnecting = false;
         if (err.code === 4001) {
           // EIP-1193 userRejectedRequest error
           // If this happens, the user rejected the connection request.
@@ -267,6 +295,7 @@ export async function connect(call?:any) {
       })
   } catch (e) {
     closeToast();
+    isConnecting = false;
     console.log('连接钱包失败', e);
     // showFailToast(i18n.global.t('tip7'))
   }

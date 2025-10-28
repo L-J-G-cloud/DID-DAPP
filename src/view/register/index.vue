@@ -3,7 +3,7 @@
   <Head />
   <div class="reg_box">
     <!-- <div class="top_box">
-        <p><img src="@/assets/imgs/home/B.png" alt=""></p>
+        <p><img src="@/assets/imgs/identitycasting/B.png" alt=""></p>
         <p><span>BLC</span> <span class="color_white"> STAKING</span></p>
     </div> -->
     <div>
@@ -25,14 +25,14 @@
 </template>
 
 <script setup lang='ts'>
-import Head from '@/view/home/components/Head.vue'
+import Head from '@/view/identitycasting/components/Head.vue'
 import { reactive, ref } from 'vue'
 import { getSignature } from '@/plugin/metamask'
 import { useStore } from "../../store/store";
 import {
   showToast,
 } from "vant";
-import fail from "@/assets/imgs/home/fail.png";
+import fail from "@/assets/imgs/identitycasting/fail.png";
 import { isValidBEP20OrPolygonAddress } from '@/utils'
 import { getSystemStatus, isRegister, getAddressWhiteList } from '@/api'
 import { useI18n } from "vue-i18n";
@@ -110,7 +110,7 @@ const init = async () => {
   min-height: 100vh;
   width: 100%;
   padding: 8.75rem 1.69rem 0;
-  // background: url('@/assets/imgs/home/no_con_bg.png') no-repeat;
+  // background: url('@/assets/imgs/identitycasting/no_con_bg.png') no-repeat;
   background-position: bottom center;
   background-size: 100%;
 }
@@ -167,7 +167,7 @@ const init = async () => {
     text-align: center;
 
     &:nth-child(2) {
-      background-color: #CF1A1B;
+      background-color: #1DCC89;
       // color: #121212;
     }
   }

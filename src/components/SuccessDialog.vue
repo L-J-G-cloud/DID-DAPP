@@ -6,7 +6,7 @@
         <p class="subtitle"> {{ t("earned") }} {{ multiple }}x {{ t("power_bonus") }}</p>
       </div>
       <div class="close-btn" @click="handleClose">
-        <img src="@/assets/imgs/home/close.png" alt="">
+        <img src="@/assets/imgs/identitycasting/close.png" alt="">
       </div>
     </div>
   </div>

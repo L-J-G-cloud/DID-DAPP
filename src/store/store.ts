@@ -34,7 +34,11 @@ export const useStore = defineStore('counter', {
         BLCAddress:'',
         Deposit:'',
         DPINAddress:'',
-        DepositAddress:''
+        DepositAddress:'',
+        DID:'',
+        USDID:'',
+        USDT:'',
+        depositDID:'',
       },
       userData:{
         is_node:0,
@@ -66,7 +70,10 @@ export const useStore = defineStore('counter', {
       userInfo: {
         token:'',
         account: '',
-        id: 0
+        id: 0,
+        user_data: {
+          pool_id: 0
+        }
       },
       menuList: [
         {
@@ -125,7 +132,7 @@ export const useStore = defineStore('counter', {
     },
     exit() {
       this.account = '';
-      this.userInfo = { account: '', id: 0,token:''};
+      this.userInfo = { account: '', id: 0,token:'', user_data: { pool_id: 0 } as any};
       this.token = '';
       localStorage.removeItem('store');
       localStorage.removeItem('blockAddress');
@@ -135,11 +142,8 @@ export const useStore = defineStore('counter', {
     }
   },
   persist: {
-    enabled: true,
-    strategies: [{
-      key: "store",
-      storage: localStorage,
-      paths:['isReload','buy_max_node','today_buy','price','usdtCount','contractInfo','account','is_exit_flag','banlance','allowBalance','token','isWalletConnet','vatContractAddress','proxyContractAddress','userInfo','lang']
-    }]
+    key: "store",
+    storage: localStorage,
+    paths:['isReload','buy_max_node','today_buy','price','usdtCount','contractInfo','account','is_exit_flag','banlance','allowBalance','token','isWalletConnet','vatContractAddress','proxyContractAddress','userInfo','lang']
   }
 })

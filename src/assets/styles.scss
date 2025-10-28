@@ -70,7 +70,7 @@ html {
 }
 
 .yel {
-  color: #CF1A1B;
+  color: #1DCC89;
 }
 // .F-Regular {
 //   font-family: 'F-Regular' !important;
@@ -86,7 +86,7 @@ body {
   position: relative;
   color: #fff;
   font-family: 'F-MiSansMedium' !important;
-  background-color: #0A0809;
+  background-color: #1E1F25;
   max-width: 460px;
   margin: auto;
   -webkit-font-smoothing: antialiased;
@@ -135,7 +135,7 @@ body {
   }
 }
 .color_ye {
-  color: #CF1A1B;
+  color: #1DCC89;
 }
 .color_b2 {
   color: #B2B2B2;
@@ -146,7 +146,7 @@ body {
 .btn_com {
   font-family: 'F-SemiBold';
   color: #1E2741;
-  background-color: #CF1A1B;
+  background-color: #1DCC89;
   border-radius: .38rem;
   width: 10.31rem;
   height: 2.5rem;
@@ -228,10 +228,9 @@ input:-internal-autofill-selected{
   .dialog {
     width: 25rem;
     box-sizing: border-box;
-    padding: 20px;
+    padding: .75rem 0;
     border-radius: 10px;
-    background-color: #121212;
-    border: 1px solid #212225;
+    background-color: #272830;
     @media screen and (max-width: 810px) {
       width: 90%;
     }
@@ -287,6 +286,7 @@ input:-internal-autofill-selected{
   --van-popover-dark-background:#090909;
   --van-active-color: #333333;
   --van-field-input-text-color: #fff;
+  --van-toast-background : #272830 !important;
 }
 
 .chian_tip .van-dialog__confirm {
@@ -388,7 +388,7 @@ input:-internal-autofill-selected{
     .van-dialog__confirm {
       width: 7.5rem;
       height: 2.5rem;
-      background: #CF1A1B;
+      background: #1DCC89;
       border-radius: .38rem;
 
       .van-button__text {

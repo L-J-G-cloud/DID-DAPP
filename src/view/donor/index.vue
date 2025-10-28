@@ -13,9 +13,9 @@
   
   <script setup lang="ts">
   import { ref } from 'vue'
-  import Head from '@/view/home/components/Head.vue'
+  import Head from '@/view/identitycasting/components/Head.vue'
   import Content from './context.vue'
-  import NoCon from '@/view/home/components/NoCon.vue'
+  import NoCon from '@/view/identitycasting/components/NoCon.vue'
   import { useStore } from '@/store/store'
   import { getSystemStatus ,getAddressWhiteList} from '@/api'
   import useLocal from "@/plugin/useLocale";
