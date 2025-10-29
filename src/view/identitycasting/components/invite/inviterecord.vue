@@ -3,14 +3,14 @@
     <div class="header">
       <div class="title-line d-flex justify-content-center">
         <div class="title">
-          <span>{{ currentAddress ? '邀请记录' : '我的邀请' }}</span>
+          <span>{{ currentserId ? '邀请记录' : '我的邀请' }}</span>
           <img src="@/assets/imgs/identitycasting/back.png" alt="" class="back-icon" @click="router.back()">
         </div>
       </div>
     </div>
 
     <!-- 统计卡片 -->
-    <div class="stats-section" v-if="!currentAddress">
+    <div class="stats-section" v-if="!currentserId">
       <div class="stats-card">
         <div class="stats-icon">
           <img src="@/assets/imgs/identitycasting/effect-user-avatar.png" alt="" class="icon-img">
@@ -34,16 +34,16 @@
         <div class="title-bar"></div>
         <span>地址列表</span>
       </div>
-      <div v-if="addressList.length">
-        <van-list v-model:loading="loading" :finished="finished" :finished-text="t('NoMore')"
-          :loading-text="t('loading')" @load="loadAddressList" :offset="30" class="address-list">
-          <div v-if="addressList.length > 0" class="address-items">
-            <div class="address-item" v-for="(item, index) in addressList" :key="index">
+      <!-- van-list 组件始终渲染，确保下拉加载功能正常 -->
+      <van-list v-model:loading="loading" :finished="finished" :finished-text="t('NoMore')"
+        :loading-text="t('loading')" @load="loadAddressList" :offset="30" :immediate-check="false" class="address-list">
+        <div v-if="addressList.length > 0" class="address-items">
+          <div class="address-item" v-for="(item, index) in addressList" :key="index">
               <div class="item-row">
                 <span class="label">钱包地址</span>
                 <div class="address-content">
-                  <img src="@/assets/imgs/identitycasting/selected.png" alt="" class="check-icon">
-                  <span class="address-text" @click="router.push(`/inviterecord/${item.address}`)">{{ getStr(item.address, 6, 6) }}</span>
+                  <img :src="item.is_valid?selectedIcon:noVliadIcon" alt="" class="check-icon">
+                  <span class="address-text" @click="router.push(`/inviterecord/${item.id}`)">{{ getStr(item.address, 6, 6) }}</span>
                   <img src="@/assets/imgs/identitycasting/copy.png" alt="" class="copy-icon"
                     @click="copyAddress(item.address)">
                 </div>
@@ -58,12 +58,11 @@
 
               <div class="item-row">
                 <span class="label">身份算力</span>
-                <span class="value">{{ getResultData(item.power) || '0' }}</span>
+                <span class="value">{{ formatDecimal(decimalParseToNumber(item.power, 18),4) || '0' }}</span>
               </div>
             </div>
           </div>
         </van-list>
-      </div>
 
 
       <!-- 无数据状态 -->
@@ -83,11 +82,13 @@
 import { useRouter ,useRoute} from 'vue-router';
 import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { getDirectRecommendationUserList, myInviteDetail } from '@/api';
-import { getStr, getdata, getResultData } from '@/utils';
+import { getDirectRecommendationUserList,myInviteDetail } from '@/api';
+import { getStr, getdata, formatDecimal, decimalParseToNumber } from '@/utils';
 import { useStore } from '@/store/store';
 import { showToastIcon } from '@/utils';
 import CopyToClipBoard from "copy-to-clipboard";
+import selectedIcon from '@/assets/imgs/identitycasting/selected.png';
+import noVliadIcon from '@/assets/imgs/identitycasting/no_valid.png';
 
 const router = useRouter();
 const route = useRoute();
@@ -104,10 +105,11 @@ const inviteStats = reactive({
 const loading = ref(false);
 const finished = ref(false);
 const addressList = ref<any[]>([]);
-
+const currentserId = ref(route.params.id as string);
 const params = reactive({
   limit: 10,
   start: 0,
+  user_id:currentserId.value ? Number(currentserId.value) : store.userInfo.user_data.id
 });
 
 // 获取邀请统计数据
@@ -115,8 +117,8 @@ const getInviteStats = async () => {
   try {
     const { code, data } = await myInviteDetail();
     if (!code && data) {
-      inviteStats.totalInvited = data.totalInvited || 0;
-      inviteStats.validUsers = data.validUsers || 0;
+      inviteStats.totalInvited = data.total_invite || 0;
+      inviteStats.validUsers = data.valid_invite || 0;
     }
   } catch (error) {
     console.error('获取邀请统计失败:', error);
@@ -124,26 +126,25 @@ const getInviteStats = async () => {
 };
 
 // 加载地址列表
-const loadAddressList = async () => {
+const loadAddressList = async () => {  
   try {
     const { code, data, total } = await getDirectRecommendationUserList({ ...params });
     if (!code && data) {
-      loading.value = false;
       addressList.value = [...addressList.value, ...data];
+      // 更新下一页的起始位置
       params.start = addressList.value.length;
-
       // 数据全部加载完成
       if (addressList.value.length >= total) {
         finished.value = true;
       }
     } else {
-      loading.value = false;
       finished.value = true;
     }
   } catch (error) {
-    console.error('加载地址列表失败:', error);
-    loading.value = false;
     finished.value = true;
+  } finally {
+    // 必须设置 loading 为 false，告诉 van-list 组件加载完成
+    loading.value = false;
   }
 };
 
@@ -155,36 +156,17 @@ const copyAddress = (address: string) => {
 
 onMounted(() => {
   getInviteStats();
-  // loadAddressList();
-  addressList.value = [
-    {
-      address: '0x1234567890',
-      create_time: 1714435200,
-      power: 100
-    },
-    {
-      address: '0x12390',
-      create_time: 1714435200,
-      power: 100
-    }
-  ];
-  finished.value = true;
 });
 
-const currentAddress = ref(route.params.address);
-watch(() => route.path, (newVal) => {
-  currentAddress.value = route.params.address as string;
-}, {
-  immediate: true,
-});
-
-watch(currentAddress, (newVal) => {
-  if (newVal) {
-    loadAddressList();
-  }
-}, {
-  immediate: true,
-});
+watch(() => route.path, (oldVal,newVal) => {
+  addressList.value = [];
+  finished.value = false;
+  // 不手动设置 loading，让 van-list 组件自己管理
+  params.start = 0;
+  currentserId.value = route.params.id as string;
+  params.user_id = currentserId.value ? Number(currentserId.value) : store.userInfo.user_data.id;
+  loadAddressList()
+},{deep:true,immediate:true});
 </script>
 
 <style scoped lang="scss">
@@ -193,6 +175,13 @@ watch(currentAddress, (newVal) => {
   border-radius: .38rem;
   min-height: 100vh;
   padding: 0 .75rem;
+  max-width: 500px;
+  margin: 0 auto;
+  
+  // PC端适配
+  @media (min-width: 768px) {
+    padding: 6rem 1.2rem 0;
+  }
 
   .header {
     font-size: 1rem;
@@ -330,8 +319,8 @@ watch(currentAddress, (newVal) => {
              
 
               .check-icon {
-                width: .88rem;
-                height: .88rem;
+                width: 1rem;
+                height: 1rem;
                 margin-right: .3rem;
               }
 

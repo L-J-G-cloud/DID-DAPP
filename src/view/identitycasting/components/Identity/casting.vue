@@ -153,7 +153,7 @@ import {
   getContractAddress,
   buyPower
 } from "@/api/mapcontract";
-import { buyDIDPower, buyPowerRecord ,exchange,exchangeList} from "@/api";
+import { buyDIDPower, powerList ,exchange,exchangeList} from "@/api";
 import Decimal from "decimal.js";
 import { useStore } from "@/store/store";
 import { useI18n } from "vue-i18n";
@@ -250,7 +250,7 @@ const copyHash = (hash: string) => {
 }
 
 const getPowerListData = async (type = 1) => {
-  const tempApi = type === 1 ? buyPowerRecord : exchangeList;
+  const tempApi = type === 1 ? powerList : exchangeList;
   const { code, data, total } = await tempApi({ ...params });
   if (!code && data) {
     loading.value = false;
@@ -1001,6 +1001,14 @@ const handleActivate = async () => {
 }
 
 .pledge-container {
+  padding: 0 .75rem;
+  max-width: 500px;
+  margin: 0 auto;
+  
+  // PC端适配
+  @media (min-width: 768px) {
+    padding: 6rem 1.2rem 0;
+  }
 
   .line {
     width: 100%;

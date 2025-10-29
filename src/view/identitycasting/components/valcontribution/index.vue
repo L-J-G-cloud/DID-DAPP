@@ -39,10 +39,10 @@
                 <img src="@/assets/imgs/identitycasting/recoder.png" alt="" class="recoder-icon" @click="showRecoderType(2)">
             </div>
             <div class="verify-content-box">
-                <span class="verify-amount-text F-Bold">100 DID</span>
+                <span class="verify-amount-text F-Bold">{{formatDecimal(decimalParseToNumber(store.powerDetailData.dynamic_income, 18),4)}} DID</span>
                 <span class="verify-detail-text" @click="router.push('/valcontribution-details')">验证详情</span>
             </div>
-            <p class="tips-text">注：验证数据统计为近100天</p>
+            <p class="tips-text">注：验证数据统计为近{{store.powerDetailData.dynamic_statics_day}}天</p>
         </div>
 
         <div class="verify-box">
@@ -51,10 +51,10 @@
                 <img src="@/assets/imgs/identitycasting/recoder.png" alt="" class="recoder-icon" @click="showRecoderType(3)">
             </div>
             <div class="verify-content-box">
-                <span class="verify-amount-text F-Bold">100 DID | 800 USDID</span>
+                <span class="verify-amount-text F-Bold">{{formatDecimal(decimalParseToNumber(store.powerDetailData.ref_usdt_income, 18),4)}} DID | {{formatDecimal(decimalParseToNumber(store.powerDetailData.ref_usdid_income, 18),4)}} USDID</span>
                 <span class="verify-detail-text" @click="router.push('/valcontribution-plusedetails')">验证详情</span>
             </div>
-            <p class="tips-text">注：验证数据统计为10-20 03:00:00至今</p>
+            <p class="tips-text">注：验证数据统计为{{store.lang === 'en' ? getdata(store.powerDetailData.ref_reward_end_time*10001).timeDetail : getdata(store.powerDetailData.ref_reward_end_time*1000).time}}至今</p>
         </div>
     </div>
     <TipsDialog ref="tipsDialog" :tipsContent="tipsContent" />
@@ -62,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+import { getdata } from '@/utils';
 import TipsDialog from '@/view/identitycasting/components/TipsDialog.vue';
 import RecordDialog from '@/view/identitycasting/components/RecordDialog.vue';
 import { onMounted, ref } from "vue";
@@ -69,7 +70,7 @@ import Decimal from 'decimal.js';
 import { powerList,getRecordList} from "@/api";
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store/store';
-import { decimalParseToNumber } from '@/utils';
+import { decimalParseToNumber, formatDecimal } from '@/utils';
 const router = useRouter();
 const store = useStore();
 const tipsDialog = ref<InstanceType<typeof TipsDialog>>();
@@ -80,7 +81,7 @@ const verifyRecordInfo = ref({
   params: {
     limit: 10,
     module: '',
-    symbol: 'DID',
+    symbol: 'DID,USDID',
   }
 });
 const tipsContent = ref({
@@ -103,12 +104,15 @@ const showRecoderType = (type: number) => {
   if(type === 1) {
     verifyRecordInfo.value.title = '节点释放记录';
     verifyRecordInfo.value.params.module = 'Unlock';
+    verifyRecordInfo.value.params.symbol = 'DID';
   } else if(type === 2) {
     verifyRecordInfo.value.title = '贡献奖励记录';
     verifyRecordInfo.value.params.module = 'DynamicIncome';
+    verifyRecordInfo.value.params.symbol = 'DID';
   } else {
     verifyRecordInfo.value.title = '加成奖励记录';
-    verifyRecordInfo.value.params.module = '';
+    verifyRecordInfo.value.params.module = 'RefIncome';
+    verifyRecordInfo.value.params.symbol = 'DID,USDID';
   }
   console.log(verifyRecordInfo.value.params);
   showRecordDialog.value = true;

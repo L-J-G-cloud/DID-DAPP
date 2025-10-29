@@ -36,14 +36,12 @@
     if (!store.account) { return }
     const { code, data } = await getSystemStatus({ address: store.account });
     if (!code) {
-      if (!code) {
-        if (data.system_status) {
-          const { code: code2, data: data2 } = await getAddressWhiteList({ address: store.account });
-          if (!code2) {
-            store.system_status = data.system_status && !data2.is_white_list;
-            if (store.system_status) {
-              RefMaintenanceDialog.value.showDialog();
-            }
+      if (data.system_status) {
+        const { code: code2, data: data2 } = await getAddressWhiteList({ address: store.account });
+        if (!code2) {
+          store.system_status = data.system_status && !data2.is_white_list;
+          if (store.system_status) {
+            RefMaintenanceDialog.value.showDialog();
           }
         }
       }

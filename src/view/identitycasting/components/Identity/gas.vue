@@ -275,6 +275,15 @@ onMounted(() => {
 .content-box {
     background-color: #1E1F25;
     border-radius: .38rem;
+    min-height: 100vh;
+    padding: 0 .75rem;
+    max-width: 500px;
+    margin: 0 auto;
+    
+    // PC端适配
+    @media (min-width: 768px) {
+      padding: 6rem 1.2rem 0;
+    }
 
 
     .header {

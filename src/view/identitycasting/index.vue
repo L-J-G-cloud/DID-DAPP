@@ -37,7 +37,8 @@ watch(() => store.account, async () => {
   if (!store.account) { return }
   const { code, data } = await getSystemStatus({ address: store.account });
   if (!code) {
-    if (!code) {
+      store.powerDetailData.ref_reward_end_time = data.ref_reward_end_time;
+      store.powerDetailData.dynamic_statics_day = data.dynamic_statics_day;
       if (data.system_status) {
         const { code: code2, data: data2 } = await getAddressWhiteList({ address: store.account });
         if (!code2) {
@@ -48,18 +49,19 @@ watch(() => store.account, async () => {
         }
       }
     }
-  }
 }, { deep: true, immediate: true })
 
 </script>
 
 <style scoped lang="scss">
 .home-container {
-  max-width: 500px;
+  // max-width: 500px;
   margin: auto;
 
   .content-container {
     padding: 5rem .75rem 0;
+    max-width: 500px;
+    margin: 0 auto;
   }
 
   :deep(.title-container) {

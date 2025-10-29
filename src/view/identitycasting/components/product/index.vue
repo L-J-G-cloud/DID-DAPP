@@ -75,6 +75,14 @@ const productDialog = ref();
 .product-container {
     width: 100%;
     height: 100%;
+    padding: 0 .75rem;
+    max-width: 500px;
+    margin: 0 auto;
+    
+    // PC端适配
+    @media (min-width: 768px) {
+      padding: 6rem 1.2rem 0;
+    }
 
     .product-content {
         width: 100%;
@@ -105,7 +113,7 @@ const productDialog = ref();
             box-sizing: border-box;
             display: flex;
             justify-content: space-between;
-            margin-top: 1.5rem;
+            margin-top: -.5rem;
             padding: 0 .8rem;
             .people-icon {
                 width: 4rem;

@@ -9,17 +9,17 @@
         <div class="info-box">
             <div class="top">
                 <p class="title-text">个人质押</p>
-                <p class="F-Bold text-white">200 DID</p>
+                <p class="F-Bold text-white">{{formatDecimal(decimalParseToNumber(store.powerDetailData.user_deposit_did, 18),4)}} DID</p>
             </div>
             <div class="bottom">
-                <p class="info-item">质押权重 <span class="F-Bold text-white">100</span></p>
-                <p class="info-item">个人权重占比 <span class="F-Bold text-white">2%</span></p>
+                <p class="info-item">质押权重 <span class="F-Bold text-white">{{formatDecimal(decimalParseToNumber(store.powerDetailData.deposit_result_user, 18),4)}}</span></p>
+                <p class="info-item">权重占比 <span class="F-Bold text-white">{{formatDecimal(store.powerDetailData.deposit_result_percent,2)}}%</span></p>
             </div>
         </div>
         <div class="action-box">
             <div class="action-left"  @click="showRecordDialog=true">
                 <p>质押奖励</p>
-                <p class="F-Bold reward-box">100 DID  <img src="@/assets/imgs/identitycasting/arr_right.png" alt="" class=""></p>
+                <p class="F-Bold reward-box">{{ formatDecimal(decimalParseToNumber(store.powerDetailData.deposit_income, 18),4) }} DID  <img src="@/assets/imgs/identitycasting/arr_right.png" alt="" class=""></p>
             </div>
             <div class="action-right F-Bold" @click="router.push('/pledge-did')">
                 质押
@@ -36,7 +36,10 @@ import { onMounted ,ref} from "vue";
 import RecordDialog from '@/view/identitycasting/components/RecordDialog.vue';
 import { powerList ,getRecordList} from "@/api";
 import { useRouter } from 'vue-router';
+import { useStore } from '@/store/store';
+import { formatDecimal, decimalParseToNumber } from '@/utils';
 const router = useRouter();
+const store = useStore();
 const tipsDialog = ref<InstanceType<typeof TipsDialog>>();
 const showRecordDialog = ref(false);
 const recordInfo = ref({

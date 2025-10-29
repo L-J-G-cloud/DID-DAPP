@@ -129,7 +129,7 @@ const walletToConnet = async (type:number) => {
     margin: auto;
     background: url('@/assets/imgs/identitycasting/to_connet_bg.png') no-repeat bottom;
     background-size: contain;
-    background-color: #171A1F;
+    background-color: #1E1F25;
     .con_box {
       display: flex;
       flex-direction: column;

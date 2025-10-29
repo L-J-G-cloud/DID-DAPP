@@ -187,7 +187,7 @@ const powerListData = async () => {
     max-height: 90vh;
     overflow-y: scroll;
     width: 92%;
-    background: #26272E;
+    background: #272830;
     border-radius: 0.38rem;
     max-width: 370px;
     padding-top: 0.75rem;

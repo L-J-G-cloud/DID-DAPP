@@ -8,39 +8,39 @@ export const useStore = defineStore('counter', {
       isReload: true,
       account: '',
       banlance: '0',
-      withdraw_fee:'',
+      withdraw_fee: '',
       allowBalance: 0,
       isWalletConnet: false,
-      lang:'en',
-      is_reg:false,
-      buy_max_node:'0',
-      today_buy:0,
-      referrer:'',
+      lang: 'en',
+      is_reg: false,
+      buy_max_node: '0',
+      today_buy: 0,
+      referrer: '',
       region: '',
-      isLoad:true,
-      isBlack:false,
+      isLoad: true,
+      isBlack: false,
       email: '',
-      timeOut:false,
-      invite_total_num:0,
-      system_status:0,
-      is_sign:false,
-      is_exit_flag:0,
-      usdtCount:'--',
-      price:0,
-      contractInfo:{
-        FTDAddress:'',
-        PayTokenAddress:'',
-        PayTokenAddress2:'',
-        BLCAddress:'',
-        Deposit:'',
-        DPINAddress:'',
-        DepositAddress:'',
-        DID:'',
-        USDID:'',
-        USDT:'',
-        depositDID:'',
+      timeOut: false,
+      invite_total_num: 0,
+      system_status: 0,
+      is_sign: false,
+      is_exit_flag: 0,
+      usdtCount: '--',
+      price: 0,
+      contractInfo: {
+        FTDAddress: '',
+        PayTokenAddress: '',
+        PayTokenAddress2: '',
+        BLCAddress: '',
+        Deposit: '',
+        DPINAddress: '',
+        DepositAddress: '',
+        DID: '',
+        USDID: '',
+        USDT: '',
+        depositDID: '',
       },
-      identityData:{
+      identityData: {
         did: '0',
         usdt: '0',
         usdid: '0',
@@ -48,21 +48,34 @@ export const useStore = defineStore('counter', {
         release_did: '0',
         wait_release_did: '0',
       },
-      userData:{
-        is_node:0,
-        is_super_node:0,
-        super_node_reward_ratio:0,
-        is_admin:0
+      powerDetailData: {
+        base_income:"0",
+        deposit_income: "0",
+        dynamic_income: "0",
+        ref_usdid_income: "0",
+        ref_usdt_income: "0",
+        user_deposit_did:'0',
+        user_identity_power:'0',
+        dynamic_statics_day:'',
+        ref_reward_end_time:1,
+        deposit_result_user:'0',
+        deposit_result_percent:'0',
       },
-      node_data:{
-        deposit_dpin:'',
-        deposit_dpin_blc:'',
-        total_income:''
+      userData: {
+        is_node: 0,
+        is_super_node: 0,
+        super_node_reward_ratio: 0,
+        is_admin: 0
       },
-      super_data:{
-        deposit_dpin:'',
-        deposit_dpin_blc:'',
-        total_income:''
+      node_data: {
+        deposit_dpin: '',
+        deposit_dpin_blc: '',
+        total_income: ''
+      },
+      super_data: {
+        deposit_dpin: '',
+        deposit_dpin_blc: '',
+        total_income: ''
       },
       needAuthorized: true,
       isDonor: false,
@@ -76,12 +89,13 @@ export const useStore = defineStore('counter', {
       proxyContractAddress: '',
       connetDialogShow: false,
       userInfo: {
-        token:'',
+        token: '',
         account: '',
         id: 0,
         user_data: {
           pool_id: 0,
-          node_type: 0
+          node_type: 0,
+          id: 0
         }
       },
       menuList: [
@@ -141,7 +155,7 @@ export const useStore = defineStore('counter', {
     },
     exit() {
       this.account = '';
-      this.userInfo = { account: '', id: 0,token:'', user_data: { pool_id: 0 } as any};
+      this.userInfo = { account: '', id: 0, token: '', user_data: { pool_id: 0 } as any };
       this.token = '';
       localStorage.removeItem('store');
       localStorage.removeItem('blockAddress');
@@ -154,13 +168,13 @@ export const useStore = defineStore('counter', {
         release_did: '0',
         wait_release_did: '0',
       };
-      console.log('exit',this.account)
+      console.log('exit', this.account)
       router.push('/connect');
     }
   },
   persist: {
     key: "store",
     storage: localStorage,
-    paths:['isReload','buy_max_node','today_buy','price','usdtCount','contractInfo','account','is_exit_flag','banlance','allowBalance','token','isWalletConnet','vatContractAddress','proxyContractAddress','userInfo','lang','identityData']
+    paths: ['isReload', 'buy_max_node', 'today_buy', 'price', 'usdtCount', 'contractInfo', 'account', 'is_exit_flag', 'banlance', 'allowBalance', 'token', 'isWalletConnet', 'vatContractAddress', 'proxyContractAddress', 'userInfo', 'lang', 'identityData', 'powerDetailData']
   }
 })

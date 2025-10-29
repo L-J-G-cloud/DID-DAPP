@@ -163,6 +163,13 @@ onMounted(() => {
     border-radius: .38rem;
     min-height: 100vh;
     padding: 0 .75rem;
+    max-width: 500px;
+    margin: 0 auto;
+    
+    // PC端适配
+    @media (min-width: 768px) {
+      padding: 6rem 1.2rem 0;
+    }
 
 
     .header {
@@ -180,7 +187,7 @@ onMounted(() => {
 
         .back-icon {
             position: absolute;
-            left: -10rem;
+            left: -9.5rem;
             top: 50%;
             transform: translateY(-50%);
             width: .48rem;

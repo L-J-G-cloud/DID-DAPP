@@ -131,6 +131,24 @@ export function withdrawal(data:object) {
   })
 }
 
+export function getFee(data?:object) {
+  return request({
+    url: '/asset/asset/getFee',
+    method: 'post',
+    data,
+  })
+}
+
+
+// 我的邀请记录
+export function myInviteDetail(data?:object) {
+  return request({
+    url: '/user/user/myInviteDetail',
+    method: 'post',
+    params:data,
+  })
+}
+
 /----- DID end -----/
 
 
@@ -223,13 +241,14 @@ export function register(data:object) {
   })
 }
 
-// 我的邀请记录
-export function myInviteDetail() {
-  return request({
-    url: '/user/myInviteDetail',
-    method: 'post'
-  })
-}
+// // 我的邀请记录
+// export function getDirectRecommendationUserList(data:object) {
+//   return request({
+//     url: '/user/user/getDirectRecommendationUserList',
+//     method: 'post',
+//     data,
+//   })
+// }
 
 // // 我的邀请记录列表
 // export function getDirectRecommendationUserList(data:object) {

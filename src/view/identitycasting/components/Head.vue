@@ -72,7 +72,7 @@
 
 
   <!-- 左侧菜单 -->
-  <van-popup v-model:show="showMenuPopup" position="left" :style="{ width: '70%', height: '100%' }">
+  <van-popup v-model:show="showMenuPopup" position="left" :style="{ width: '70%',maxWidth: '500px', height: '100%' }">
     <div>
       <div class="top_logo_box">
         <img src="@/assets/imgs/header/top_logo.png" alt="">
@@ -362,6 +362,7 @@ const confirmExit = () => {
     padding: 0.5rem 0;
     margin-bottom: 1.38rem;
     line-height: 1rem;
+    cursor: pointer;
   }
 
   .top_logo_box {

@@ -63,7 +63,7 @@
               <div class="record-time">{{ store.lang === 'tw' ? getdata(record.create_time * 1000).timeDetail :
                 getdata(record.create_time * 1000).langEnStr }}</div>
             </div>
-            <div class="record-status">提现</div>
+            <div class="record-status">{{ record.remark}}</div>
           </div>
         </van-list>
       </div>
@@ -86,7 +86,7 @@ import { useRouter } from 'vue-router';
 import CopyToClipBoard from "copy-to-clipboard";
 import { showToastIcon, getdata, formatDecimal } from '@/utils';
 import { useI18n } from "vue-i18n";
-import { withdrawal, getUserBalance, getRecordList } from '@/api/index';
+import { withdrawal, getUserBalance, getRecordList ,getFee} from '@/api/index';
 import { decimalParseToBigNumber, decimalParseToNumber } from '@/api/mapcontract'
 import { useStore } from '@/store/store';
 import { ref, reactive, onMounted, nextTick } from 'vue';
@@ -101,8 +101,8 @@ const finished = ref(false);
 const params = reactive({
   limit: 10,
   start: 0,
-  module: 'withdrawal',
-  symbol: '',
+  module: 'Withdrawal,WithdrawalFee',
+  symbol: 'DID,USDT,USDID',
 });
 
 // 货币选项数据类型定义
@@ -124,6 +124,21 @@ const canWithdraw = ref(false);
 
 // 提现记录数据
 const withdrawalRecords = ref<any[]>([]);
+
+
+// 获取手续费
+const getFeeData = async () => {
+  try {
+    const { code, data } = await getFee({
+      token_type: selectedCurrency.value,
+    });
+    if (!code) {
+      fee.value = Number(decimalParseToNumber(data.fee, 18));
+    }
+  } catch (error) {
+    console.error('获取手续费失败:', error);
+  }
+}
 
 // 获取提现记录数据
 const getRecordListData = async () => {
@@ -163,6 +178,7 @@ const selectCurrency = (currency: string) => {
   selectedCurrency.value = currency;
   withdrawalAmount.value = '';
   calculateWithdrawal();
+  getFeeData();
 };
 
 // 设置全部金额
@@ -209,6 +225,10 @@ const getUserBalanceData = async () => {
 // 处理提现
 const handleWithdraw = async () => {
   if (!canWithdraw.value) return;
+  if(Number(withdrawalAmount.value) <= fee.value){
+    showToastIcon('提现金额需大于手续费', 'error');
+    return;
+  }
   const { code, data } = await withdrawal({
     value: decimalParseToBigNumber(withdrawalAmount.value, 18).toString(),
     token_type: selectedCurrency.value,
@@ -259,6 +279,7 @@ onMounted(() => {
   finished.value = true; // 初始数据已加载完成
   getRecordListData();
   getUserBalanceData();
+  getFeeData();
 });
 
 </script>
@@ -268,6 +289,14 @@ onMounted(() => {
   background-color: #1E1F25;
   border-radius: .38rem;
   min-height: 100vh;
+  padding: 0 .75rem;
+  max-width: 500px;
+  margin: 0 auto;
+  
+  // PC端适配
+  @media (min-width: 768px) {
+    padding: 6rem 1.2rem 0;
+  }
 
   .header {
     font-size: 1rem;

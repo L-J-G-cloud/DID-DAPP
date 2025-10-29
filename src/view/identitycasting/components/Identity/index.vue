@@ -10,8 +10,8 @@
       <div class="left">
         <img src="@/assets/imgs/identitycasting/peo_logo.png" alt="" class="peo-logo">
         <div>
-          <p class="info-item"><span class="title-text">身份算力</span> <span>100</span></p>
-          <p class="info-item"><span class="title-text">身份积分</span> <span>100</span></p>
+          <p class="info-item"><span class="title-text">身份算力</span> <span>{{formatDecimal(decimalParseToNumber(store.powerDetailData.user_identity_power, 18),4)}}</span></p>
+          <p class="info-item"><span class="title-text">身份积分</span> <span>{{101}}</span></p>
         </div>
       </div>
       <div class="right">
@@ -19,7 +19,7 @@
       </div>
     </div>
     <div class="power-box">
-      <p><span class="title-text">身份算力奖励</span> <span>100</span></p>
+      <p><span class="title-text">身份算力奖励</span> <span>{{formatDecimal(decimalParseToNumber(store.powerDetailData.base_income, 18),4)}}</span></p>
       <img src="@/assets/imgs/identitycasting/recoder.png" alt="" class="recoder-icon" @click="handleClickRecord(2)">
     </div>
     <div class="action-box">
@@ -41,7 +41,11 @@ import { useRouter } from 'vue-router';
 import TipsDialog from '@/view/identitycasting/components/TipsDialog.vue';
 import RecordDialog from '@/view/identitycasting/components/RecordDialog.vue';
 import { powerDetail, getRecordList } from "@/api";
+import { useStore } from '@/store/store';
+import { formatDecimal, decimalParseToNumber } from '@/utils';
+import Decimal from "decimal.js";
 const router = useRouter();
+const store = useStore();
 const tipsDialog = ref<InstanceType<typeof TipsDialog>>();
 const showRecordDialog = ref(false);
 const recordInfo = ref({
@@ -49,8 +53,8 @@ const recordInfo = ref({
   api: (params: any) => (params),
   params: {
     limit: 10,
-    module: 'DID',
-    symbol: 'DID',
+    module: '',
+    symbol: '',
   }
 });
 const tipsContent = ref({
@@ -76,13 +80,37 @@ const openTipsDialog = () => {
 const handleClickRecord = (type: number) => {
   if (type === 1) {
     recordInfo.value.title = '身份算力记录';
+    recordInfo.value.params.module = '';
+    recordInfo.value.params.symbol = '';
   } else if (type === 2) {
     recordInfo.value.api = getRecordList;
     recordInfo.value.params.module = 'BaseIncome';
+    recordInfo.value.params.symbol = 'DID';
     recordInfo.value.title = '身份算力奖励记录';
   }
   showRecordDialog.value = true;
 }
+
+const getPowerDetailData = async () => {
+  const { code, data } = await powerDetail();
+  if (!code) {
+    store.powerDetailData = {...store.powerDetailData, ...data.income_result};
+    store.powerDetailData.user_deposit_did = data.deposit_result.user_deposit_did;
+    store.powerDetailData.user_identity_power = data.identity_power_result.user;
+    store.powerDetailData.deposit_result_user = data.deposit_result.user;
+    const user = decimalParseToNumber(data.deposit_result.user, 18);
+    const pool = decimalParseToNumber(data.deposit_result.pool, 18);
+    if(pool > 0 && user > 0){
+      store.powerDetailData.deposit_result_percent = new Decimal(user).div(new Decimal(pool)).mul(100).toString();
+    } else {
+      store.powerDetailData.deposit_result_percent = '0';
+    }
+  }
+}
+
+onMounted(() => {
+  getPowerDetailData();
+})
 </script>
 <style scoped lang="scss">
 .content-box {

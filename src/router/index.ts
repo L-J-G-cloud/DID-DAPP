@@ -67,7 +67,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/view/identitycasting/components/valcontribution/plusedetails.vue')
   },
   {
-    path: '/inviterecord/:address?',
+    path: '/inviterecord/:id?',
     name: 'inviterecord',
     component: () => import('@/view/identitycasting/components/invite/inviterecord.vue')
   },

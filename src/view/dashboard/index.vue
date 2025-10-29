@@ -10,12 +10,14 @@
                 身份仪表盘 
             </h2>
             <div class="data-table-box">
-                <div class="data-table">
+                <!-- 手机端：滑动式tab -->
+                <div class="data-table mobile-tabs" v-if="isMobile">
                     <div class="data-table-item" v-for="item in dataTable" :key="item.id" @click="activeTable(item)">
                         <span :class="['F-Bold item-name', item.active ? 'active' : '']">{{ item.name }}</span>
                     </div>
                 </div>
-                <div class="swipe-container" 
+                <div class="swipe-container mobile-swipe" 
+                     v-if="isMobile"
                      @touchstart="handleTouchStart" 
                      @touchmove="handleTouchMove" 
                      @touchend="handleTouchEnd"
@@ -24,6 +26,21 @@
                         <div class="data-table-item-content" v-for="item in table.data" :key="item.id">
                             <p class="F-Bold">{{ item.name }}</p>
                             <p class="value F-Bold">{{formatDecimal(item.value,4) }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 宽屏端：3列展示 -->
+                <div class="desktop-tabs" v-if="!isMobile">
+                    <div class="tab-section" v-for="table in dataTable" :key="table.id">
+                        <div class="tab-header">
+                            <span class="F-Bold tab-title">{{ table.name }}</span>
+                        </div>
+                        <div class="tab-content">
+                            <div class="data-table-item-content" v-for="item in table.data" :key="item.id">
+                                <p class="F-Bold">{{ item.name }}</p>
+                                <p class="value F-Bold">{{formatDecimal(item.value,4) }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -56,7 +73,7 @@ import Chart from './chart.vue'
 import { useStore } from '@/store/store'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import {powerDetail,getUserBalance} from '@/api/index'
 
 import {decimalParseToNumber,formatDecimal} from '@/utils'
@@ -141,6 +158,7 @@ const translateX = ref(0);
 const startX = ref(0);
 const currentIndex = ref(0);
 const containerWidth = ref(0);
+const isMobile = ref(false);
 
 // 数据映射配置
 const DATA_MAPPING = [
@@ -148,6 +166,25 @@ const DATA_MAPPING = [
     { tableIndex: 1, dataKey: 'deposit_result', fields: ['total', 'pool', 'user'] },        // 质押数据
     { tableIndex: 2, dataKey: 'verify_power_result', fields: ['total', 'pool', 'user'] }     // 验证数据
 ] as const;
+
+// 检测屏幕尺寸
+const checkScreenSize = () => {
+    isMobile.value = window.innerWidth < 768; // 768px以下为手机端
+};
+
+// 监听窗口大小变化
+const handleResize = () => {
+    checkScreenSize();
+    if (isMobile.value) {
+        // 手机端重新计算容器宽度
+        nextTick(() => {
+            const container = document.querySelector('.data-table-box');
+            if (container) {
+                containerWidth.value = container.clientWidth;
+            }
+        });
+    }
+};
 
 // 获取算力明细
 const getPowerDetail = async () => {
@@ -227,22 +264,38 @@ const handleTouchEnd = (e: TouchEvent) => {
 }
 
 onMounted(() => {
-    activeTable(dataTable.value[0]);
-    // 获取容器宽度
-    nextTick(() => {
-        const container = document.querySelector('.data-table-box');
-        if (container) {
-            containerWidth.value = container.clientWidth;
-        }
-    });
+    // 初始化屏幕尺寸检测
+    checkScreenSize();
+    
+    // 只在手机端初始化滑动相关逻辑
+    if (isMobile.value) {
+        activeTable(dataTable.value[0]);
+        // 获取容器宽度
+        nextTick(() => {
+            const container = document.querySelector('.data-table-box');
+            if (container) {
+                containerWidth.value = container.clientWidth;
+            }
+        });
+    }
+    
+    // 监听窗口大小变化
+    window.addEventListener('resize', handleResize);
+    
     getPowerDetail();
     getUserBalanceData();
+})
+
+onUnmounted(() => {
+    // 清理事件监听器
+    window.removeEventListener('resize', handleResize);
 })
 </script>
 <style scoped lang="scss">
 .dashboard-content {
     padding: 6rem 1.2rem 0;
-
+    max-width: 1400px;
+    margin: 0 auto;
     .title {
         font-size: 1.13rem;
         margin-bottom: 1rem;
@@ -256,11 +309,10 @@ onMounted(() => {
         overflow: hidden;
     }
 
-    .data-table {
+    // 手机端样式
+    .mobile-tabs {
         display: flex;
         margin-bottom: 1.2rem;
-
-
 
         .data-table-item {
             width: 100%;
@@ -294,7 +346,7 @@ onMounted(() => {
         }
     }
 
-    .swipe-container {
+    .mobile-swipe {
         display: flex;
         transition: transform 0.3s ease;
         width: 300%; // 3个tab的总宽度
@@ -319,6 +371,58 @@ onMounted(() => {
                     font-size: 1rem;
                     line-height: 1.38rem;
                     color: #fff;
+                }
+            }
+        }
+    }
+
+    // 宽屏端样式
+    .desktop-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+
+        .tab-section {
+            flex: 1;
+            background-color: #272830;
+            border-radius: .38rem;
+            overflow: hidden;
+
+            .tab-header {
+                padding: .75rem 1rem;
+                // background-color: #34353E;
+                border-bottom: 1px solid #404147;
+
+                .tab-title {
+                    font-size: 1rem;
+                    color: #fff;
+                }
+            }
+
+            .tab-content {
+                padding: .75rem;
+
+                .data-table-item-content {
+                    text-align: center;
+                    height: 3.5rem;
+                    box-sizing: border-box;
+                    background-color: #1E1F26;
+                    border-radius: .25rem;
+                    padding: .5rem 0;
+                    margin-bottom: .5rem;
+                    font-size: .75rem;
+                    line-height: 1rem;
+                    color: #828592;
+
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+
+                    .value {
+                        font-size: .88rem;
+                        line-height: 1.25rem;
+                        color: #fff;
+                    }
                 }
             }
         }
@@ -382,6 +486,8 @@ onMounted(() => {
         .withdraw-btn {
             width: 100%;
             height: 2.75rem;
+            max-width: 400px;
+            margin: 0 auto;
             background-color: #1DCC89;
             border-radius: .38rem;
             font-size: .88rem;
