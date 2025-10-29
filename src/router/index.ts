@@ -7,6 +7,11 @@ const routes: Array<RouteRecordRaw> = [
     redirect: '/dashboard'
   },
   {
+    path: '/connect',
+    name: 'connect',
+    component: () => import('@/view/identitycasting/components/NoCon.vue')
+  },
+  {
     path: '/identitycasting',
     name: 'Identitycasting',
     component: () => import('@/view/identitycasting/index.vue')
@@ -70,7 +75,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/product',
     name: 'product',
     component: () => import('@/view/identitycasting/components/product/index.vue')
-  }
+  },
 ]
 
 const router = createRouter({   
@@ -79,12 +84,21 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
- 
   const store = useStore()
-  console.log(store.is_reg,store.token)
-  // if(to.path!=='/'&&to.path!=='/node-sub'&&to.path!=='/registrationform'&&to.path!=='/donor'&&store.token){
-  //   next('/');
-  // }
+  
+  // 如果用户已登录且有token，但访问连接页面，重定向到dashboard
+  if (store.token && to.path === '/connect') {
+    next('/dashboard');
+    return;
+  }
+  
+  // 如果用户未登录且不在连接页面，重定向到连接页面
+  if (!store.account && to.path !== '/connect') {
+    next('/connect');
+    return;
+  }
+  
+  // 其他情况正常通过
   next();
 })
 export default router

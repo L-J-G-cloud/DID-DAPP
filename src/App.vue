@@ -1,4 +1,5 @@
 <script setup>
+import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from './store/store'
 import useLocale from './plugin/useLocale'

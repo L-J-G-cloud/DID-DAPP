@@ -114,9 +114,18 @@ export function exchangeList(data:object) {
 }
 
 //算力明细
-export function powerDetail(data:object) {
+export function powerDetail(data?:object) {
   return request({
     url: '/power/data/powerDetail',
+    method: 'post',
+    data,
+  })
+}
+
+// 提现
+export function withdrawal(data:object) {
+  return request({
+    url: '/asset/asset/withdrawal',
     method: 'post',
     data,
   })
@@ -331,14 +340,7 @@ export function withdrawalRelease(data:object) {
   })
 }
 
-// 提现
-export function withdrawal(data:object) {
-  return request({
-    url: '/asset/withdrawal',
-    method: 'post',
-    data,
-  })
-}
+
 
 // 待释放余额明细
 export function waitReleaseList(data:object) {

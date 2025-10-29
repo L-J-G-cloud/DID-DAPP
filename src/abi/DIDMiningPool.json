@@ -776,6 +776,11 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
           "internalType": "uint256",
           "name": "amount",
           "type": "uint256"
@@ -828,12 +833,58 @@
     {
       "inputs": [
         {
+          "internalType": "address[]",
+          "name": "_users",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_amounts",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_poolIds",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_indexes",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "batchAddBuyRecord",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "uint256[]",
           "name": "_buyIds",
           "type": "uint256[]"
         }
       ],
       "name": "batchCloseBuyRecord",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "newPoolId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_buyIds",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "batchMigrateBuyRecord",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -1066,6 +1117,11 @@
               "internalType": "uint256",
               "name": "created",
               "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "mintedDIDAmount",
+              "type": "uint256"
             }
           ],
           "internalType": "struct DIDMiningPool.miningPool[]",
@@ -1144,6 +1200,11 @@
             {
               "internalType": "uint256",
               "name": "created",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "mintedDIDAmount",
               "type": "uint256"
             }
           ],
@@ -1427,6 +1488,11 @@
         {
           "internalType": "uint256",
           "name": "created",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "mintedDIDAmount",
           "type": "uint256"
         }
       ],

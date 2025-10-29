@@ -40,13 +40,13 @@ import { onMounted ,ref} from "vue";
 import { useRouter } from 'vue-router';
 import TipsDialog from '@/view/identitycasting/components/TipsDialog.vue';
 import RecordDialog from '@/view/identitycasting/components/RecordDialog.vue';
-import { powerList } from "@/api";
+import { powerDetail, getRecordList } from "@/api";
 const router = useRouter();
 const tipsDialog = ref<InstanceType<typeof TipsDialog>>();
 const showRecordDialog = ref(false);
 const recordInfo = ref({
   title: '',
-  api: powerList,
+  api: (params: any) => (params),
   params: {
     limit: 10,
     module: 'DID',
@@ -77,6 +77,8 @@ const handleClickRecord = (type: number) => {
   if (type === 1) {
     recordInfo.value.title = '身份算力记录';
   } else if (type === 2) {
+    recordInfo.value.api = getRecordList;
+    recordInfo.value.params.module = 'BaseIncome';
     recordInfo.value.title = '身份算力奖励记录';
   }
   showRecordDialog.value = true;

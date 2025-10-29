@@ -35,7 +35,7 @@
             </div>
           </div>
         </button>
-        <div class="menu-item" @click="showMenuPopup = true">
+        <div class="menu-item" @click="showMenuPopup = true" v-if="store.account">
           <img src="@/assets/imgs/header/menu.png" alt="" class="menu_img">
         </div>
       </div>
@@ -97,8 +97,11 @@
     <p class="des"> {{ t('areYouOut') }} {{ getStr(store.account, 8, 4) }} {{ t('mei') }}</p>
   </van-dialog>
 
-  <Dialog ref="productDialog">
+  <Dialog ref="productDialog" class="product-dialog">
     <template #default>
+      <div class="title-close-box">
+        <img src="@/assets/imgs/identitycasting/close_icon.png" alt="" class="title-close-icon" @click="handleClickClose" />
+      </div>
       <div class="product-dialog-content">
         <h4>产品中心温馨提示</h4>
         <p>消耗 100 身份积分 完成数字身份铸造，即刻开启 DID 联盟全系能力与服务。</p>
@@ -170,7 +173,10 @@ const menuList = ref([
   {
     icon: 'menu_4',
     name: '知识中心',
-    router: '/knowledge'
+    router: '/knowledge',
+    tw_link:'https://www.notion.so/didone/DID-24d8a457d08680988e02d26c0b789a8f',
+    en_link:'https://www.notion.so/didone/Global-Digital-Identity-Alliance-2868a457d0868033a62bf0150639ebe8',
+    ko_link:'https://www.notion.so/didone/2958a457d08680e6bcf3eabdc4d064b8',
   }
 ])
 
@@ -184,6 +190,9 @@ const handleClickBtns = () => {
     router.push('/casting');
   }
 }
+const handleClickClose = () => {
+  productDialog.value.close();
+}
 const activeMenu = (item: any) => {
   if (item.router === '/product' && !isConsumeIntegral.value && router.currentRoute.value.path !== '/product') {
     showMenuPopup.value = false;
@@ -192,6 +201,15 @@ const activeMenu = (item: any) => {
   }
   if (item.link) {
     window.open(item.link, '_blank');
+  } else if (item.tw_link || item.en_link || item.ko_link) {
+    // 根据当前语言选择对应的链接
+    const langLink = item[`${store.lang}_link`];
+    if (langLink) {
+      window.open(langLink, '_blank');
+    } else {
+      // 如果没有对应语言的链接，默认使用英文链接
+      window.open(item.en_link || item.tw_link || item.ko_link, '_blank');
+    }
   } else {
     router.push(item.router);
   }
@@ -307,12 +325,7 @@ const toggleWalletDropdown = () => {
 // 登出功能
 const logout = () => {
   showWalletDropdown.value = false;
-  store.$patch({
-    account: '',
-    token: '',
-    isWalletConnet: false
-  });
-  router.push('/');
+  (store as any).exit();
 };
 
 const confirmExit = () => {
@@ -334,6 +347,7 @@ const confirmExit = () => {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
   .footer_menu_img {
     width: 2.13rem;
     height: 2.13rem;
@@ -625,6 +639,17 @@ img {
 
   @media screen and (max-width: 992px) {
     font-size: 0.85rem;
+  }
+}
+
+.title-close-box {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: .5rem;
+  .title-close-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    cursor: pointer;
   }
 }
 

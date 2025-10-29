@@ -15,7 +15,7 @@ export async function run() {
   // this returns the provider, or null if it wasn't detected
   //环境监测
   function isMobileMetaMask() {
-      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
       console.log(userAgent,'userAgent')
       return /android|iphone|ipad|ipod/i.test(userAgent) && window.ethereum && window.ethereum.isMetaMask && window.ethereum.isMobile;
   }
@@ -25,25 +25,28 @@ export async function run() {
     window.ethereum.on('accountsChanged', handleAccountsChanged)
     window.ethereum.on('chainChanged', handleChainChanged)
     const store = useStore();
-    window.ethereum //为什么要加这个因为Tp钱包切换账号后会刷新页面，不会触发accountsChanged事件
-      .request({
-        method: 'eth_requestAccounts',
-      }).then((res:any)=>{
-        if(store.account&&res[0].toLowerCase()!=store.account.toLowerCase()){
-          store.exit();
-          store.changeload();
-        }else{
-          store.account = res[0];
-          if(store.is_exit_flag){
-            store.account = '';
-            router.push('/');
-            return;
+    // 只有在用户已经连接过钱包的情况下才自动检查账户
+    if (store.account && store.token) {
+      window.ethereum //为什么要加这个因为Tp钱包切换账号后会刷新页面，不会触发accountsChanged事件
+        .request({
+          method: 'eth_requestAccounts',
+        }).then((res:any)=>{
+          if(store.account&&res[0].toLowerCase()!=store.account.toLowerCase()){
+            store.exit();
+            store.changeload();
+          }else{
+            store.account = res[0];
+            if(store.is_exit_flag){
+              store.account = '';
+              router.push('/');
+              return;
+            }
+            if(!isMobileMetaMask()&&!store.token){
+              isRegisterFn(res[0]);
+            }
           }
-          if(!isMobileMetaMask()&&!store.token){
-            isRegisterFn(res[0]);
-          }
-        }
-      })
+        })
+    }
     return true;
   } else {
     console.log('Please install MetaMask!')
@@ -124,7 +127,7 @@ async function handleAccountsChanged(accounts: string | any[]) {
   // }
   if (localStorage.blckAddress&&accounts[0].toLowerCase() !== localStorage.blckAddress.toLowerCase()) {
     store.account = '';
-    store.userInfo = { account: '', id: 0,token:'' };
+    store.userInfo = { account: '', id: 0, token: '', user_data: { pool_id: 0, node_type: 0 } };
     store.token = '';
     localStorage.removeItem('store');
     localStorage.removeItem('blockAddress');

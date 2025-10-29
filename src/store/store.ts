@@ -40,6 +40,14 @@ export const useStore = defineStore('counter', {
         USDT:'',
         depositDID:'',
       },
+      identityData:{
+        did: '0',
+        usdt: '0',
+        usdid: '0',
+        total_lock_did: '0',
+        release_did: '0',
+        wait_release_did: '0',
+      },
       userData:{
         is_node:0,
         is_super_node:0,
@@ -72,7 +80,8 @@ export const useStore = defineStore('counter', {
         account: '',
         id: 0,
         user_data: {
-          pool_id: 0
+          pool_id: 0,
+          node_type: 0
         }
       },
       menuList: [
@@ -137,13 +146,21 @@ export const useStore = defineStore('counter', {
       localStorage.removeItem('store');
       localStorage.removeItem('blockAddress');
       localStorage.removeItem('blockToken');
+      this.identityData = {
+        did: '0',
+        usdt: '0',
+        usdid: '0',
+        total_lock_did: '0',
+        release_did: '0',
+        wait_release_did: '0',
+      };
       console.log('exit',this.account)
-      router.push('/');
+      router.push('/connect');
     }
   },
   persist: {
     key: "store",
     storage: localStorage,
-    paths:['isReload','buy_max_node','today_buy','price','usdtCount','contractInfo','account','is_exit_flag','banlance','allowBalance','token','isWalletConnet','vatContractAddress','proxyContractAddress','userInfo','lang']
+    paths:['isReload','buy_max_node','today_buy','price','usdtCount','contractInfo','account','is_exit_flag','banlance','allowBalance','token','isWalletConnet','vatContractAddress','proxyContractAddress','userInfo','lang','identityData']
   }
 })

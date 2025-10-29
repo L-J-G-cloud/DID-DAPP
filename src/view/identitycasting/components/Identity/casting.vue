@@ -84,8 +84,8 @@
       <div class="activate_title">
         兑换码
       </div>
-      <van-field v-model="info.Amount" center clearable class="ftd-num-field F-Bold field-box" type="number"
-        :placeholder="t('PleaseEnter')" @input="changeAmount">
+      <van-field v-model="info.exchangeCode" center clearable class="ftd-num-field F-Bold field-box" type="text"
+        :placeholder="t('PleaseEnter')">
       </van-field>
       <van-button class="activate_btn F-Bold" @click="handleActivate">
         兑换
@@ -104,7 +104,7 @@
           <div class="record-item" v-for="(item, index) in recordList" :key="index">
             <div class="money-box">
               <span class="F-Bold">
-                {{ formatDecimal(decimalParseToNumber(item.total_usd, 18), 4) }} USD | 20 USDID
+                <i>{{ formatDecimal(item.total_usd, 4) }} USDT</i>  <i v-if="item.usdid.greaterThan(0)"> | {{ formatDecimal(item.usdid, 4) }} USDID</i> 
               </span>
               <span class="status-text">
                 {{ item.status === 0 ? '区块链确认中' : '铸造成功' }}
@@ -153,13 +153,11 @@ import {
   getContractAddress,
   buyPower
 } from "@/api/mapcontract";
-import { buyDIDPower, buyPowerRecord } from "@/api";
+import { buyDIDPower, buyPowerRecord ,exchange,exchangeList} from "@/api";
 import Decimal from "decimal.js";
 import { useStore } from "@/store/store";
 import { useI18n } from "vue-i18n";
 import i18n from '@/plugin/i18n'
-import selectedIcon from '@/assets/imgs/identitycasting/selected.png';
-import select from '@/assets/imgs/identitycasting/select.png';
 import CopyToClipBoard from "copy-to-clipboard";
 const store = useStore();
 const { t } = useI18n();
@@ -226,6 +224,7 @@ const info = reactive({
   is_buy: false,
   USDT: '0',
   allUSDT: '0',
+  exchangeCode: '',
 });
 const payType = ref(1);
 const isFlexible = ref(false);
@@ -250,10 +249,16 @@ const copyHash = (hash: string) => {
   showToastIcon(t("copied"), "success");
 }
 
-const getPowerListData = async () => {
-  const { code, data, total } = await buyPowerRecord({ ...params });
+const getPowerListData = async (type = 1) => {
+  const tempApi = type === 1 ? buyPowerRecord : exchangeList;
+  const { code, data, total } = await tempApi({ ...params });
   if (!code && data) {
     loading.value = false;
+    data.forEach((item: any) => {
+      item.total_usd = decimalParseToNumber(item.total_usd, 18);
+      item.usd = decimalParseToNumber(item.usd, 18);
+      item.usdid = new Decimal(item.total_usd).sub(new Decimal(item.usd));
+    });
     recordList.value = [...recordList.value, ...data];
     params.start = recordList.value.length;
     // 数据全部加载完成
@@ -503,7 +508,7 @@ const toBuy = async () => {
       duration: 0,
       wordBreak: "break-word",
     });
-    const params = {
+    const buyParams = {
       usdt: decimalParseToBigNumber(info.Amount, 18).toString(),
       usdid: decimalParseToBigNumber(info.USDID, 18).toString(),
       trx_id: '',
@@ -514,32 +519,19 @@ const toBuy = async () => {
       poolId: 1,
       type: payType.value
     });
-    params.trx_id = hash;
-    const { code } = await buyDIDPower(params);
+    buyParams.trx_id = hash;
+    const { code } = await buyDIDPower(buyParams);
     if (!code) {
-      showToastTip("success", t("StakeSuccessful"));
+      showToastTip("success", '操作成功');
       checkBalance();
+      setTimeout(() => {
+        params.start = 0;
+        getPowerListData();
+        getBalance();
+      }, 3000);
     }
-    if (!code) {
-      if (store.isDonor) {
-        setTimeout(() => {
-          checkBalance();
-        }, 3000);
-      } else {
-        setTimeout(async () => {
-          checkBalance();
-          info.Amount = "";
-          info.Amount = "";
-          confirmText.value = t("Stake");
-          info.isSatisfy = false;
-          closeToast();
-        }, 3000);
-      }
-    }
-
-
   } catch (error) {
-    showToastTip("fail", t("StakeFailed"));
+    showToastTip("fail", '操作失败');
     console.log(error)
     setTimeout(() => {
       closeToast();
@@ -606,6 +598,11 @@ const changeTab = (item: any) => {
     item.active = false;
   });
   item.active = true;
+  params.start = 0;
+  finished.value = false;
+  recordList.value = [];
+  const type = tabList.value[0].active ? 1 : 2;
+  getPowerListData(type);
 }
 
 const handleButtonClick = () => {
@@ -616,7 +613,24 @@ const handleButtonClick = () => {
   }
 }
 
-const handleActivate = () => {
+const handleActivate = async () => {
+  if (!info.exchangeCode) {
+    showToastTip("fail", '请输入兑换码');
+    return;
+  }
+  const { code } = await exchange({
+    exchange_code: info.exchangeCode
+  });
+  if (!code) {
+    showToastTip("success", '操作成功');
+    setTimeout(() => {
+      params.start = 0;
+      getPowerListData(2);
+      getBalance();
+    }, 3000);
+  } else {
+    showToastTip("fail", '操作失败');
+  }
   console.log('handleActivate')
 }
 

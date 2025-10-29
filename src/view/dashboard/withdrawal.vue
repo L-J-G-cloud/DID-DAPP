@@ -54,34 +54,29 @@
         <span>提现记录</span>
       </div>
 
-       <div class="records-list">
-         <van-list 
-           v-model:loading="loading" 
-           :finished="finished" 
-           :finished-text="t('NoMore')"
-           :loading-text="t('loading')" 
-           @load="getRecordList" 
-           :offset="30"
-         >
-           <div class="record-item" v-for="(record, index) in withdrawalRecords" :key="index">
-             <div class="record-left">
-               <div class="record-amount">- {{ record.amount }} {{ record.currency }}</div>
-               <div class="record-time">{{ record.time }}</div>
-             </div>
-             <div class="record-status">提现</div>
-           </div>
-         </van-list>
-       </div>
+      <div class="records-list" v-if="withdrawalRecords.length">
+        <van-list v-model:loading="loading" :finished="finished" :finished-text="t('NoMore')"
+          :loading-text="t('loading')" @load="getRecordListData" :offset="30">
+          <div class="record-item" v-for="(record, index) in withdrawalRecords" :key="index">
+            <div class="record-left">
+              <div class="record-amount">- {{ formatDecimal(record.amount, 4) }} {{ record.symbol }}</div>
+              <div class="record-time">{{ store.lang === 'tw' ? getdata(record.create_time * 1000).timeDetail :
+                getdata(record.create_time * 1000).langEnStr }}</div>
+            </div>
+            <div class="record-status">提现</div>
+          </div>
+        </van-list>
+      </div>
 
-       <!-- 无记录 -->
-       <div class="no-record" v-if="!withdrawalRecords.length && finished">
-         <img class="empty-img" src="@/assets/imgs/identitycasting/empty-record.png" alt="" />
-         <div class="empty-text">{{ t('NoContent') }}</div>
-       </div>
+      <!-- 无记录 -->
+      <div class="no-record" v-if="!withdrawalRecords.length && finished">
+        <img class="empty-img" src="@/assets/imgs/identitycasting/empty-record.png" alt="" />
+        <div class="empty-text">{{ t('NoContent') }}</div>
+      </div>
 
-       <div v-if="!withdrawalRecords.length && !finished" class="no-record loading_text">
-         <p>{{ t('loading') }}</p>
-       </div>
+      <div v-if="!withdrawalRecords.length && !finished" class="no-record loading_text">
+        <p>{{ t('loading') }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -89,12 +84,15 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import CopyToClipBoard from "copy-to-clipboard";
-import { showToastIcon } from '@/utils';
+import { showToastIcon, getdata, formatDecimal } from '@/utils';
 import { useI18n } from "vue-i18n";
+import { withdrawal, getUserBalance, getRecordList } from '@/api/index';
+import { decimalParseToBigNumber, decimalParseToNumber } from '@/api/mapcontract'
+import { useStore } from '@/store/store';
 import { ref, reactive, onMounted, nextTick } from 'vue';
 const { t } = useI18n();
 const router = useRouter();
-
+const store = useStore();
 // 提现记录数据
 const loading = ref(false);
 const finished = ref(false);
@@ -103,6 +101,8 @@ const finished = ref(false);
 const params = reactive({
   limit: 10,
   start: 0,
+  module: 'withdrawal',
+  symbol: '',
 });
 
 // 货币选项数据类型定义
@@ -110,7 +110,6 @@ interface CurrencyOption {
   value: string;
   label: string;
   balance: number;
-  feeRate: number;
 }
 
 // 货币选项数据 根据后端接口返回
@@ -124,86 +123,25 @@ const fee = ref(1);
 const canWithdraw = ref(false);
 
 // 提现记录数据
-const withdrawalRecords = ref([
-  {
-    amount: '5',
-    currency: 'DID',
-    time: '2025-08-09 10:20:10'
-  },
-  {
-    amount: '5',
-    currency: 'DID',
-    time: '2025-08-09 10:20:10'
-  },
-  {
-    amount: '5',
-    currency: 'DID',
-    time: '2025-08-09 10:20:10'
-  },
-  {
-    amount: '5',
-    currency: 'DID',
-    time: '2025-08-09 10:20:10'
-  },
-  {
-    amount: '5',
-    currency: 'DID',
-    time: '2025-08-09 10:20:10'
-  },
-  {
-    amount: '5',
-    currency: 'DID',
-    time: '2025-08-09 10:20:10'
-  }
-]);
-  
+const withdrawalRecords = ref<any[]>([]);
+
 // 获取提现记录数据
-const getRecordList = async () => {
+const getRecordListData = async () => {
   try {
+    loading.value = true;
     // 这里需要替换为实际的API调用
-    // const { code, data, total } = await getRecordListApi({ ...params });
-    
-    // 模拟API调用 - 只在第一次加载时返回数据
-    if (params.start === 0) {
-      const mockData = {
-        code: 0,
-        data: [
-          {
-            amount: '5',
-            currency: 'DID',
-            time: '2025-08-09 10:20:10'
-          },
-          {
-            amount: '10',
-            currency: 'DID',
-            time: '2025-08-08 15:30:25'
-          },
-          {
-            amount: '3',
-            currency: 'DID',
-            time: '2025-08-07 09:15:40'
-          }
-        ],
-        total: 3
-      };
-      
-      const { code, data, total } = mockData;
-      
-      if (!code && data) {
-        loading.value = false;
-        withdrawalRecords.value = [...withdrawalRecords.value, ...data];
-        params.start = withdrawalRecords.value.length;
-        
-        // 数据全部加载完成
-        if (withdrawalRecords.value.length >= total) {
-          finished.value = true;
-        }
-      } else {
-        loading.value = false;
+    const { code, data, total } = await getRecordList({ ...params });
+    if (!code) {
+      loading.value = false;
+      data.forEach((item: any) => {
+        item.amount = decimalParseToNumber(item.amount, 18);
+      });
+      withdrawalRecords.value = [...withdrawalRecords.value, ...data];
+      params.start = withdrawalRecords.value.length;
+      if (withdrawalRecords.value.length >= total) {
         finished.value = true;
       }
     } else {
-      // 后续加载时直接标记为完成
       loading.value = false;
       finished.value = true;
     }
@@ -245,7 +183,6 @@ const calculateWithdrawal = () => {
     canWithdraw.value = true;
   } else {
     actualAmount.value = 0;
-    fee.value = 0;
     canWithdraw.value = false;
   }
 };
@@ -255,72 +192,73 @@ const formatNumber = (num: number) => {
   return num.toLocaleString();
 };
 
-// 处理提现
-const handleWithdraw = () => {
-  if (!canWithdraw.value) return;
-
-  // 这里可以添加提现逻辑
-  console.log('提现', {
-    currency: selectedCurrency.value,
-    amount: withdrawalAmount.value,
-    actualAmount: actualAmount.value,
-    fee: fee.value
-  });
-
-  // 模拟提现成功
-  showToastIcon('提现申请已提交', 'success');
-
-  // 更新对应货币的余额
-  const currentCurrency = currencyOptions.value.find(currency => currency.value === selectedCurrency.value);
-  if (currentCurrency) {
-    currentCurrency.balance -= parseFloat(withdrawalAmount.value);
+const getUserBalanceData = async () => {
+  try {
+    const { code, data } = await getUserBalance();
+    if (!code) {
+      store.identityData = { ...store.identityData, ...data };
+      currencyOptions.value[0].balance = Number(decimalParseToNumber(store.identityData.did, 18));
+      currencyOptions.value[1].balance = Number(decimalParseToNumber(store.identityData.usdt, 18));
+      currencyOptions.value[2].balance = Number(decimalParseToNumber(store.identityData.usdid, 18));
+    }
+  } catch (error) {
+    console.error('获取用户余额失败:', error);
   }
+}
 
-  // 添加到提现记录
-  withdrawalRecords.value.unshift({
-    amount: withdrawalAmount.value,
-    currency: selectedCurrency.value,
-    time: new Date().toLocaleString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    }).replace(/\//g, '-')
-  });
-
-  withdrawalAmount.value = '';
-  calculateWithdrawal();
+// 处理提现
+const handleWithdraw = async () => {
+  if (!canWithdraw.value) return;
+  const { code, data } = await withdrawal({
+    value: decimalParseToBigNumber(withdrawalAmount.value, 18).toString(),
+    token_type: selectedCurrency.value,
+    chain_type: 'BSC',
+  })
+  if (!code) {
+    showToastIcon('操作成功', 'success');
+    setTimeout(() => {
+      params.start = 0;
+      finished.value = false;
+      withdrawalRecords.value = [];
+      getRecordListData();
+      // 更新对应货币的余额
+      const currentCurrency = currencyOptions.value.find(currency => currency.value === selectedCurrency.value);
+      if (currentCurrency) {
+        currentCurrency.balance -= parseFloat(withdrawalAmount.value);
+      }
+      withdrawalAmount.value = '';
+      calculateWithdrawal();
+    }, 2000)
+  }
 };
 
 // 页面初始化
 onMounted(() => {
+  window.scrollTo(0, 0);
   // 初始化货币选项数据
   currencyOptions.value = [
     {
       value: 'DID',
       label: 'DID',
       balance: 69320,
-      feeRate: 0.02
     },
     {
       value: 'USDT',
       label: 'USDT',
-      balance: 1000,
-      feeRate: 0.02
+      balance: 1000
     },
     {
       value: 'USDID',
       label: 'USDID',
       balance: 500,
-      feeRate: 0.02
     }
   ];
-  
+
   // 设置初始状态
   params.start = withdrawalRecords.value.length;
   finished.value = true; // 初始数据已加载完成
+  getRecordListData();
+  getUserBalanceData();
 });
 
 </script>
@@ -362,12 +300,14 @@ onMounted(() => {
     margin: 0 0.88rem 1rem;
     border-radius: 0.38rem;
   }
+
   // 货币选择标签页
   .currency-tabs {
     display: flex;
     justify-content: space-between;
     border-radius: 0.38rem;
     margin-bottom: 0.88rem;
+
     .tab-item {
       width: 32%;
       text-align: center;
@@ -379,6 +319,7 @@ onMounted(() => {
       transition: all 0.3s ease;
       background-color: #26272E;
       border: 1px solid #3D3D3D;
+
       &.active {
         background-color: rgba(29, 204, 137, 0.16);
         border: 1px solid #1DCC89;
@@ -400,6 +341,7 @@ onMounted(() => {
       line-height: 2.81rem;
       padding: 0 0.88rem;
       box-sizing: border-box;
+
       .amount-input {
         flex: 1;
         background: none;
@@ -436,9 +378,11 @@ onMounted(() => {
     align-items: center;
     margin-top: 0.88rem;
     border-top: 1px solid #34353E;
+
     .summary-left {
       .amount-to-receive {
         padding: 0.5rem 0 0;
+
         .label {
           color: #828592;
           font-size: 0.88rem;
@@ -510,7 +454,6 @@ onMounted(() => {
       .record-item {
         display: flex;
         justify-content: space-between;
-        align-items: center;
         padding: 0.75rem;
         border-top: 1px solid #34353E;
 

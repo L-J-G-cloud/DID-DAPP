@@ -34,17 +34,17 @@
 import TipsDialog from '@/view/identitycasting/components/TipsDialog.vue';
 import { onMounted ,ref} from "vue";
 import RecordDialog from '@/view/identitycasting/components/RecordDialog.vue';
-import { powerList } from "@/api";
+import { powerList ,getRecordList} from "@/api";
 import { useRouter } from 'vue-router';
 const router = useRouter();
 const tipsDialog = ref<InstanceType<typeof TipsDialog>>();
 const showRecordDialog = ref(false);
 const recordInfo = ref({
   title: '质押奖励记录',
-  api: powerList,
+  api: getRecordList,
   params: {
     limit: 10,
-    module: 'DID',
+    module: 'DepositIncome',
     symbol: 'DID',
   }
 });

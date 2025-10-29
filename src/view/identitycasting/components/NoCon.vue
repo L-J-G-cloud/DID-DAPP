@@ -1,5 +1,6 @@
 <template>
   <div class="no_con_box">
+    <Head />
       <div class="con_box">
         <img src="@/assets/imgs/header/to_connet.png" alt="">
         <div class="text">{{t('connectyourwallet')}}</div>
@@ -49,6 +50,7 @@ import detectEthereumProvider from "@metamask/detect-provider";
 import { storeToRefs } from "pinia";
 import { useStore } from "../../../store/store";
 import { useI18n } from "vue-i18n";
+import Head from '@/view/identitycasting/components/Head.vue'
 const store = useStore();
 const { t } = useI18n();
 const { account, token, menuList, connetDialogShow } = storeToRefs(store);
@@ -127,7 +129,7 @@ const walletToConnet = async (type:number) => {
     margin: auto;
     background: url('@/assets/imgs/identitycasting/to_connet_bg.png') no-repeat bottom;
     background-size: contain;
-    background-color: #1E1F25;
+    background-color: #171A1F;
     .con_box {
       display: flex;
       flex-direction: column;

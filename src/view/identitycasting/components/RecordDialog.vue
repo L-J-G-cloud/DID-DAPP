@@ -85,8 +85,10 @@ const props = defineProps({
 })
 
 const params = reactive({
-  limit: props.info.params.limit,
   start: 0,
+  limit: props.info.params.limit,
+  module: props.info.params.module,
+  symbol: props.info.params.symbol,
 });
 // 交易记录列表
 const recordList = ref<any[]>([]);
@@ -108,6 +110,13 @@ const deletePropertyIfExists = (obj: any, prop: any) => {
     // console.log(`属性 "${prop}" 不存在`);
   }
 }
+// 监听props.info.params的变化，同步更新params
+watch(() => props.info.params, (newParams) => {
+  params.limit = newParams.limit;
+  params.module = newParams.module;
+  params.symbol = newParams.symbol;
+}, { deep: true });
+
 watch(() => show.value, async (value) => {
   if (value) {
     recordList.value = [];

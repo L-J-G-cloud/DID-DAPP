@@ -4,10 +4,6 @@
 
     <Head />
     <div class="content-container">
-      <!-- 子路由视图 -->
-      <router-view />
-      
-      <!-- 内容 -->
       <Identity />
       <DIDPledge />
       <ValContribution />
@@ -19,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import Head from '@/view/identitycasting/components/Head.vue'
 import Identity from '@/view/identitycasting/components/Identity/index.vue'
 import DIDPledge from '@/view/identitycasting/components/didpledge/index.vue'

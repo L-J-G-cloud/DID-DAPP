@@ -6,7 +6,7 @@
             </div>
             <img src="@/assets/imgs/identitycasting/tips.png" alt="" class="tips-icon" @click="openTipsDialog">
         </div>
-        <div class="node-box">
+        <div class="node-box"  v-if="!store.userInfo.user_data.node_type">
             <div class="title-box">
                 <span>节点释放</span>
                 <img src="@/assets/imgs/identitycasting/recoder.png" alt="" class="recoder-icon" @click="showRecoderType(1)">
@@ -15,20 +15,20 @@
                 <div class="content-item">
                     <div class="content-item-left">
                         <p>待释放 DID</p>
-                        <p class="F-Bold text-white">800,444</p>
+                        <p class="F-Bold text-white">{{ nodeInfo.unlock_did }}</p>
                     </div>
                     <div class="content-item-right">
                         <p>已释放 DID</p>
-                        <p class="F-Bold text-white">1,200,444</p>
+                        <p class="F-Bold text-white">{{ nodeInfo.release_did }}</p>
                     </div>
                 </div>
                 <div class="progress-box">
                     <div class="progress-bar">
-                        <div class="progress-fill" :style="{ width: progressWidth + '%' }">
+                        <div class="progress-fill" :style="{ width: nodeInfo.progress + '%' }">
                             <div class="light-bar" :class="{ 'animate': isLightBarActive }"></div>
                         </div>
                     </div>
-                    <p class="progress-text">释放进度 <span>{{ Math.round(progressWidth) }}%</span></p>
+                    <p class="progress-text">释放进度 <span>{{nodeInfo.progress}}%</span></p>
                 </div>
             </div>
             <p class="tips-text">注：新增个人验证贡献 100 ，解锁1个DID</p>
@@ -65,17 +65,21 @@
 import TipsDialog from '@/view/identitycasting/components/TipsDialog.vue';
 import RecordDialog from '@/view/identitycasting/components/RecordDialog.vue';
 import { onMounted, ref } from "vue";
-import { powerList } from "@/api";
+import Decimal from 'decimal.js';
+import { powerList,getRecordList} from "@/api";
 import { useRouter } from 'vue-router';
+import { useStore } from '@/store/store';
+import { decimalParseToNumber } from '@/utils';
 const router = useRouter();
+const store = useStore();
 const tipsDialog = ref<InstanceType<typeof TipsDialog>>();
 const showRecordDialog = ref(false);
 const verifyRecordInfo = ref({
   title: '验证贡献记录',
-  api: powerList,
+  api: getRecordList,
   params: {
     limit: 10,
-    module: 'DID',
+    module: '',
     symbol: 'DID',
   }
 });
@@ -88,17 +92,25 @@ const tipsContent = ref({
   ]
 });
 
+const nodeInfo = ref({
+  total_lock_did: 0,
+  unlock_did: 0,
+  release_did: 0,
+  progress: 0
+});
+
 const showRecoderType = (type: number) => {
   if(type === 1) {
     verifyRecordInfo.value.title = '节点释放记录';
-    verifyRecordInfo.value.api = powerList;
+    verifyRecordInfo.value.params.module = 'Unlock';
   } else if(type === 2) {
     verifyRecordInfo.value.title = '贡献奖励记录';
-    verifyRecordInfo.value.api = powerList;
+    verifyRecordInfo.value.params.module = 'DynamicIncome';
   } else {
     verifyRecordInfo.value.title = '加成奖励记录';
-    verifyRecordInfo.value.api = powerList;
+    verifyRecordInfo.value.params.module = '';
   }
+  console.log(verifyRecordInfo.value.params);
   showRecordDialog.value = true;
 }
 
@@ -146,6 +158,16 @@ onMounted(() => {
     setTimeout(() => {
         startProgressAnimation();
     }, 500);
+
+    nodeInfo.value = {
+        unlock_did: Number(decimalParseToNumber(store.identityData.wait_release_did,18)),
+        total_lock_did:  Number(decimalParseToNumber(store.identityData.total_lock_did,18)),
+        release_did:  Number(decimalParseToNumber(store.identityData.release_did,18)),
+        progress: 0
+    }
+    if(new Decimal(nodeInfo.value.total_lock_did).gt(0)) {
+        nodeInfo.value.progress = Number(new Decimal(nodeInfo.value.release_did).div(nodeInfo.value.total_lock_did).mul(100).toNumber().toFixed(2));
+    }
 });
 </script>
 <style scoped lang="scss">
