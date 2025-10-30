@@ -3,7 +3,7 @@
     <div class="header">
       <div class="title-line d-flex justify-content-center">
         <div class="title">
-          <span>{{ '奖励提现' }}</span>
+          <span>{{ $t('withdraw_title') }}</span>
           <img src="@/assets/imgs/identitycasting/back.png" alt="" class="back-icon" @click="router.back()">
         </div>
       </div>
@@ -22,10 +22,10 @@
         <div class="input-container">
           <input type="number" v-model="withdrawalAmount" placeholder="0" class="amount-input"
             @input="calculateWithdrawal">
-          <button class="all-btn" @click="setAllAmount">全部</button>
+          <button class="all-btn" @click="setAllAmount">{{ $t('withdraw_all') }}</button>
         </div>
         <div class="balance-display">
-          {{ selectedCurrency }}数量: <span class="text-white">{{ formatNumber(getCurrentBalance()) }}</span>
+          {{ selectedCurrency }}{{ $t('Amount') }}: <span class="text-white">{{ formatNumber(getCurrentBalance()) }}</span>
         </div>
       </div>
 
@@ -33,15 +33,15 @@
       <div class="withdrawal-summary">
         <div class="summary-left">
           <div class="amount-to-receive">
-            <p class="label">到账数量</p>
+            <p class="label">{{ $t('withdraw_arrival') }}</p>
             <p class="amount">{{ actualAmount }} {{ selectedCurrency }}</p>
           </div>
           <div class="fee-info">
-            手续费: <span class="text-white">{{ fee }} {{ selectedCurrency }}</span>
+            {{ $t('withdraw_fee') }} <span class="text-white">{{ fee }} {{ selectedCurrency }}</span>
           </div>
         </div>
         <button class="withdraw-btn" @click="handleWithdraw" :disabled="!canWithdraw">
-          提现
+          {{ $t('withdraw_action') }}
         </button>
       </div>
     </div>
@@ -51,7 +51,7 @@
     <div class="withdrawal-records">
       <div class="records-title">
         <div class="title-icon"></div>
-        <span>提现记录</span>
+        <span>{{ $t('withdraw_record') }}</span>
       </div>
 
       <div class="records-list" v-if="withdrawalRecords.length">
@@ -226,7 +226,7 @@ const getUserBalanceData = async () => {
 const handleWithdraw = async () => {
   if (!canWithdraw.value) return;
   if(Number(withdrawalAmount.value) <= fee.value){
-    showToastIcon('提现金额需大于手续费', 'error');
+    showToastIcon(t('withdraw_amount_gt_fee'), 'error');
     return;
   }
   const { code, data } = await withdrawal({
@@ -235,7 +235,7 @@ const handleWithdraw = async () => {
     chain_type: 'BSC',
   })
   if (!code) {
-    showToastIcon('操作成功', 'success');
+    showToastIcon(t('withdraw_success'), 'success');
     setTimeout(() => {
       params.start = 0;
       finished.value = false;

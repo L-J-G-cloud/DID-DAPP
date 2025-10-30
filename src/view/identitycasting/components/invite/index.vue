@@ -3,8 +3,8 @@
         <div class="invite-left-box">
             <img src="@/assets/imgs/identitycasting/share.png" alt="" class="share-icon">
             <div>
-                <p class="F-Bold invite-text">我要邀请</p>
-                <p class="invite-address-box" @click="handleCopy"><span class="invite-address-text">邀请地址</span> <span
+                <p class="F-Bold invite-text">{{ $t('invite_invite_me') }}</p>
+                <p class="invite-address-box" @click="handleCopy"><span class="invite-address-text">{{ $t('InvitationLink') }}</span> <span
                         class="invite-address-value">{{ getStr(store.account,6,6) }}</span> <img
                         src="@/assets/imgs/identitycasting/copy.png" alt="" class="copy-icon"></p>
             </div>
@@ -16,15 +16,17 @@
 
 <script setup lang="ts">
 import { getStr } from '@/utils';
+import { useI18n } from 'vue-i18n';
 import { useStore } from '@/store/store';
 import CopyToClipBoard from "copy-to-clipboard";
 import {showToastIcon} from '@/utils'
 import { useRouter } from 'vue-router';
 const router = useRouter();
 const store = useStore();
+const { t } = useI18n();
 const handleCopy = () => {
     CopyToClipBoard(store.account);
-    showToastIcon('地址已复制', 'success',1000);
+    showToastIcon(t('invite_copied'), 'success',1000);
 }
 </script>
 <style scoped lang="scss">

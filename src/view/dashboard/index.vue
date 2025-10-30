@@ -7,7 +7,7 @@
         <div class="dashboard-content">
             <h2 class="title F-Bold"> 
                 <img src="@/assets/imgs/identitycasting/data.png" alt="" class="data-icon">
-                身份仪表盘 
+                {{ $t('head_menu_dashboard') }} 
             </h2>
             <div class="data-table-box">
                 <!-- 手机端：滑动式tab -->
@@ -48,7 +48,7 @@
             <div class="award-box">
                 <div class="award-top">
                     <img src="@/assets/imgs/identitycasting/award.png" alt="">
-                    <p class="title F-Bold">奖励总揽</p>
+                    <p class="title F-Bold">{{ $t('bonus_income') }}</p>
                 </div>
                 <div class="award-content">
                     <div class="award-item" v-for="item in awardList" :key="item.id">
@@ -57,7 +57,7 @@
                     </div>
                 </div>
                 <div class="withdraw-btn F-Bold" @click="router.push('/withdrawal')">
-                    提现
+                    {{ $t('withdraw_action') }}
                 </div>
             </div>
         </div>

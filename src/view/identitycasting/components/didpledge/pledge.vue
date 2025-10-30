@@ -3,7 +3,7 @@
         <div class="header">
             <div class="title-line d-flex justify-content-center">
                 <div class="title">
-                    <span>{{ 'DID质押' }}</span>
+                    <span>{{ $t('pledge_title') }}</span>
                     <img src="@/assets/imgs/identitycasting/back.png" alt="" class="back-icon" @click="router.back()">
                 </div>
             </div>
@@ -11,13 +11,13 @@
 
         <!-- 质押输入区域 -->
         <div class="staking-input-section">
-            <div class="section-title">质押数量</div>
+            <div class="section-title">{{ $t('pledge_amount') }}</div>
 
             <!-- 数量输入框 -->
             <div class="input-container">
-                <input type="text" v-model="stakingAmount" placeholder="请输入数量" class="amount-input"
+                <input type="text" v-model="stakingAmount" :placeholder="$t('pledge_amount_placeholder')" class="amount-input"
                     @input="handleAmountInput">
-                <button class="all-btn" @click="setAllAmount">全部</button>
+                <button class="all-btn" @click="setAllAmount">{{ $t('pledge_all') }}</button>
             </div>
 
             <!-- 质押选项按钮 -->
@@ -33,11 +33,11 @@
 
             <!-- 锁仓时间选择 -->
             <div class="lockup-time-section">
-                <div class="section-label">锁仓时间</div>
+                <div class="section-label">{{ $t('pledge_lock_time') }}</div>
                 <div class="dropdown-container" :class="{ 'active': showDropdown }">
-                    <input type="number" v-model="selectedLockupTime" placeholder="请输入天数" class="lockup-input"
+                    <input type="number" v-model="selectedLockupTime" :placeholder="$t('pledge_lock_time_placeholder')" class="lockup-input"
                         @input="handleLockupInput">
-                    <span class="day-text" v-if="selectedLockupTime">天</span>
+                    <span class="day-text" v-if="selectedLockupTime">{{ $t('pledge_day') }}</span>
                     <div class="dropdown-arrow-container" @click="toggleDropdown">
                         <img src="@/assets/imgs/identitycasting/arr_down.png" alt="" class="dropdown-arrow"
                         :class="{ 'rotated': showDropdown }">
@@ -49,7 +49,7 @@
                         <div class="options-list">
                             <div class="option-item" v-for="day in lockupDays" :key="day" @click="selectDay(day)"
                                 :class="{ 'selected': selectedLockupTime === day.toString() }" :data-day="day">
-                                <span class="option-text">{{ day }}天</span>
+                                <span class="option-text">{{ day }}{{ $t('pledge_day') }}</span>
                                 <img :src="selectedLockupTime === day.toString() ? selected : select" alt=""
                                     class="checkbox-icon">
                             </div>
@@ -61,11 +61,11 @@
             <!-- 质押详情 -->
             <div class="staking-details">
                 <div class="detail-item">
-                    <span class="label">加倍速率:</span>
+                    <span class="label">{{ $t('pledge_rate') }}</span>
                     <span class="value">{{ doublingRate }}%</span>
                 </div>
                 <div class="detail-item">
-                    <span class="label">DID余额:</span>
+                    <span class="label">{{ $t('pledge_did_balance') }}</span>
                     <span class="value">{{ formatDecimal(didBalance, 4) }}</span>
                 </div>
             </div>
@@ -85,7 +85,7 @@
         <div class="staking-records-section">
             <div class="records-title">
                 <div class="title-icon"></div>
-                <span>质押记录</span>
+                <span>{{ $t('pledge_record') }}</span>
             </div>
 
             <div class="records-list">
@@ -97,7 +97,7 @@
                                 <div class="record-amount">
                                     {{ record.amount }} DID
                                 </div>
-                                <div class="record-rate">加倍速率: {{ record.rate }}%</div>
+                                <div class="record-rate">{{ $t('pledge_record_rate') }} {{ record.rate }}%</div>
                             </div>
                              <div class="record-status" :class="getStatusClass(record.status)">
                                  <div class="status-dot"></div>
@@ -107,15 +107,15 @@
 
                         <div class="record-details">
                             <div class="detail-row">
-                                <span class="detail-label">锁仓周期:</span>
-                                <span class="detail-value">{{ record.lockupPeriod }}天</span>
+                                <span class="detail-label">{{ $t('pledge_record_cycle') }}</span>
+                                <span class="detail-value">{{ record.lockupPeriod }}{{ $t('pledge_day') }}</span>
                             </div>
                             <div class="detail-row">
-                                <span class="detail-label">开始时间:</span>
+                                <span class="detail-label">{{ $t('pledge_record_start') }}</span>
                                 <span class="detail-value">{{ record.startTime }}</span>
                             </div>
                             <div class="detail-row">
-                                <span class="detail-label">结束时间:</span>
+                                <span class="detail-label">{{ $t('pledge_record_end') }}</span>
                                 <span class="detail-value">{{ record.endTime }}</span>
                             </div>
                         </div>
@@ -123,7 +123,7 @@
                          <div class="record-actions" v-if="record.status === 2">
                              <div>
                                  <button class="redeem-btn F-Bold" v-if="record.showRedeem" @click="handleRedeem(record)">
-                                     赎回
+                                     {{ $t('pledge_redeem') }}
                                  </button>
                              </div>
 
@@ -171,7 +171,7 @@ const doublingRate = ref(5);
 const didBalance = ref('--');
 const canStake = ref(false);
 const allowanceBalance = ref('0');
-const buttonText = ref('质押');
+const buttonText = ref(t('pledge_action'));
 const isApprovalNeeded = ref(false);
 const errorMessage = ref('');
 
@@ -237,16 +237,13 @@ const stakingRecords = ref([
 
 // 处理金额输入
 const handleAmountInput = () => {
-    console.log('事件被触发，当前值:', stakingAmount.value);
     
     // 检查是否匹配预设选项
     const matchedOption = stakingOptions.value.find(option => option.value === stakingAmount.value);
     if (matchedOption) {
         selectedOption.value = stakingAmount.value;
-        console.log('匹配到预设选项:', stakingAmount.value);
     } else {
         selectedOption.value = '';
-        console.log('自定义输入:', stakingAmount.value);
     }
     
     calculateStaking();
@@ -266,7 +263,6 @@ const toggleDropdown = () => {
 
 // 处理锁仓时间输入
 const handleLockupInput = () => {
-    console.log('锁仓时间输入:', selectedLockupTime.value);
     
     // 确保输入值是字符串格式，以便与下拉选项匹配
     const inputValue = selectedLockupTime.value.toString();
@@ -274,7 +270,6 @@ const handleLockupInput = () => {
     // 检查输入的值是否在有效范围内
     const numericValue = parseInt(inputValue);
     if (numericValue && numericValue >= 1 && numericValue <= 360) {
-        console.log('输入值有效，当前selectedLockupTime:', selectedLockupTime.value);
         selectDay(numericValue);
         // 输入值在有效范围内，可以继续
         calculateStaking();
@@ -284,7 +279,6 @@ const handleLockupInput = () => {
             scrollToSelectedOption(numericValue);
         }
     } else if (inputValue === '') {
-        console.log('输入已清空');
         // 清空输入
         calculateStaking();
     }
@@ -333,45 +327,33 @@ const calculateStaking = () => {
     const balance = parseFloat(didBalance.value) || 0;
     const allowance = parseFloat(allowanceBalance.value) || 0;
     
-    console.log('计算质押状态:', {
-        amount,
-        balance,
-        allowance,
-        didBalanceRaw: didBalance.value,
-        allowanceBalanceRaw: allowanceBalance.value
-    });
     
     // 重置状态
     errorMessage.value = '';
     canStake.value = false;
     isApprovalNeeded.value = false;
-    buttonText.value = '质押';
+    buttonText.value = t('pledge_action');
     
     // 基础验证
     if (Number(amount) <= 0 || !selectedLockupTime.value) {
-        console.log('基础验证失败:', { amount, lockupTime: selectedLockupTime.value });
         return;
     }
     
     // 余额检查
-    console.log(balance, amount, 'balance, amount')
     if (Number(balance) < Number(amount)) {
-        console.log('余额不足:', { balance, amount });
-        errorMessage.value = '余额不足';
+        errorMessage.value = t('pledge_insufficient_balance');
         return;
     }
     
     // 授权检查
     if (Number(allowance) < Number(amount)) {
-        console.log('需要授权:', { allowance, amount });
         canStake.value = true;
-        buttonText.value = '授权';
+        buttonText.value = t('AuthorizationTo');
         isApprovalNeeded.value = true;
         return;
     }
     
     // 可以质押
-    console.log('可以质押');
     canStake.value = true;
 };
 
@@ -383,11 +365,11 @@ const formatNumber = (num: number) => {
 // 获取状态文本
 const getStatusText = (status: number | string) => {
     const statusMap: { [key: string | number]: string } = {
-        0: '区块确认中',
-        1: '质押中',
-        2: '已到期',
+        0: t('pledge_status_pending'),
+        1: t('pledge_status_staking'),
+        2: t('pledge_status_expired'),
     };
-    return statusMap[status] || '未知状态';
+    return statusMap[status] || t('pledge_status_unknown');
 };
 
 // 获取状态样式类
@@ -421,12 +403,12 @@ const handleAuthorize = async () => {
                 stakingAmount.value, 
                 18, 
                 () => {
-                    showToastIcon('授权成功', 'success');
+                    showToastIcon(t('Authorizationsuccessful'), 'success');
                     allowanceBalance.value = stakingAmount.value;
                     calculateStaking();
                 }, 
                 () => {
-                    showToastIcon('授权失败', 'fail');
+                    showToastIcon(t('AuthorizationFail'), 'fail');
                     setTimeout(() => {
                         checkBalance();
                     }, 2000);
@@ -437,16 +419,14 @@ const handleAuthorize = async () => {
                 amount: stakingAmount.value,
                 durationDays: selectedLockupTime.value,
             });
-            console.log(hash, 'hash')
-            showToastIcon('质押成功', 'success');
+            showToastIcon(t('pledge_success'), 'success');
             setTimeout(() => {
                 checkBalance();
                 resetForm();
             }, 2000)
         }
     } catch (error) {
-        console.error('操作失败:', error);
-        showToastIcon('操作失败', 'fail');
+        showToastIcon(t('pledge_fail'), 'fail');
     } finally {
         setTimeout(() => {
             closeToastLoading();
@@ -466,8 +446,7 @@ const resetForm = () => {
 
 // 处理赎回
 const handleRedeem = (record: any) => {
-    console.log('赎回', record);
-    showToastIcon('赎回申请已提交', 'success');
+    showToastIcon(t('pledge_redeem_submitted'), 'success');
 };
 
 // 获取质押记录
@@ -497,7 +476,7 @@ const getStakingRecords = async () => {
     } catch (error) {
         loading.value = false;
         finished.value = true;
-        console.error('获取质押记录失败:', error);
+        // 获取质押记录失败
     }
 };
 
@@ -520,20 +499,16 @@ const checkBalance = async () => {
 
         // 获取DID余额
         const balance = await getTokenBalance(didAddress.value, store.account, 18);
-        console.log('原始余额:', balance);
         if (Number(balance) > 0) {
             didBalance.value = balance || '0';
-            console.log('格式化后余额:', didBalance.value);
         } else {
             didBalance.value = '0';
         }
 
         // 获取授权额度
         const allowBalance = await getTokenAllowBalance(didAddress.value, store.account, 18, depositDIDAddress.value);
-        console.log('原始授权额度:', allowBalance);
         if (Number(allowBalance) > 0) {
             allowanceBalance.value = allowBalance || '0';
-            console.log('格式化后授权额度:', allowanceBalance.value);
         } else {
             allowanceBalance.value = '0';
         }
@@ -541,7 +516,6 @@ const checkBalance = async () => {
         // 重新计算质押状态
         calculateStaking();
     } catch (error) {
-        console.error('检查余额失败:', error);
         didBalance.value = '0';
         allowanceBalance.value = '0';
     }

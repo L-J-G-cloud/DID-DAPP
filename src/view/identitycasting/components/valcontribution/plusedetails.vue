@@ -3,7 +3,7 @@
         <div class="header">
             <div class="title-line d-flex justify-content-center">
                 <div class="title">
-                    <span>{{ '验证详情' }}</span>
+                    <span>{{ $t('val_detail_title') }}</span>
                     <img src="@/assets/imgs/identitycasting/back.png" alt="" class="back-icon" @click="router.back()">
                 </div>
             </div>
@@ -14,7 +14,7 @@
             <div class="section-title">
                 <div class="d-flex align-items-center">
                     <div class="title-bar"></div>
-                    <span class="F-Bold">验证贡献数据</span>
+                    <span class="F-Bold">{{ $t('val_contribution_data') }}</span>
                 </div>
                 <img src="@/assets/imgs/identitycasting/tips.png" alt="" class="tips-icon" @click="openTipsDialog">
             </div>
@@ -27,16 +27,16 @@
         <div class="minting-record-section">
             <div class="section-title">
                 <div class="title-bar"></div>
-                <span>地址列表</span>
+                <span>{{ $t('invite_address_list') }}</span>
             </div>
 
             <div class="record-header">
-                <div class="header-item">钱包地址</div>
+                <div class="header-item">{{ $t('invite_wallet_address') }}</div>
                 <div class="header-item"></div>
             </div>
             <div v-if="valRecords.length">
                 <!-- 使用van-list实现分页 -->
-                <van-list v-model:loading="loading" :finished="finished" loading-text="加载中..." finished-text="没有更多了"
+                <van-list v-model:loading="loading" :finished="finished" :loading-text="$t('loading')" :finished-text="$t('no_more')"
                     @load="loadMoreRecords" class="record-list" :immediate-check="true">
                     <div v-for="(record, index) in valRecords" :key="index" class="record-item">
                         <div class="wallet-address">
@@ -73,20 +73,14 @@ const store = useStore();
 const { t } = useI18n();
 const valAddress = ref(route.params.address);
 const tipsDialog = ref<InstanceType<typeof TipsDialog>>();
-const tipsContent = ref({
-    title: '个人验证贡献奖励规则',
+const tipsContent = computed(reactive(() => ({
+    title: t('val_rule_title'),
     content: [
-        {
-            content: '个人新增验证贡献总和 = 全节点新增贡献总额 — 最大节点新增贡献。',
-        },
-        {
-            content: '算力池验证贡献 = 近100天算力池新增验证贡献总和',
-        },
-        {
-            content: '每日验证贡献奖励 = （近100天个人新增验证贡献总和 ÷ 算力池验证贡献贡献） × 每日算力池验证贡献奖励',
-        }
+        { content: t('val_rule_1') },
+        { content: t('val_rule_2') },
+        { content: t('val_rule_3') }
     ]
-});
+})));
 
 const openTipsDialog = () => {
     tipsDialog.value?.open();
@@ -131,10 +125,9 @@ const loadMoreRecords = () => {
 const copyAddress = async (address: string) => {
     try {
         CopyToClipBoard(address);
-        showToastIcon('地址已复制', 'success',1000);
+        showToastIcon(t('invite_copied'), 'success',1000);
     } catch (err) {
-        console.error('复制失败:', err);
-        showToastIcon('复制失败', 'fail',1000);
+        showToastIcon(t('fail'), 'fail',1000);
     }
 };
 
@@ -147,11 +140,9 @@ watch(() => route.path, () => {
 
 // 初始化
 onMounted(() => {
-    console.log('Component mounted');
     // 重置状态
     // valRecords.value = [];
     valRecords.value = mockRecords;
-    console.log(valAddress.value, 'valAddress');
 
     loading.value = false;
     finished.value = true;

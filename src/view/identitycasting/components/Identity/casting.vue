@@ -3,7 +3,7 @@
     <div class="header">
       <div class="title-line d-flex justify-content-center">
         <div class="title">
-          <span>{{ '身份铸造' }}</span>
+          <span>{{ $t('casting_title') }}</span>
           <img src="@/assets/imgs/identitycasting/back.png" alt="" class="back-icon" @click="router.back()">
         </div>
       </div>
@@ -21,7 +21,7 @@
     <div v-if="tabList[0].active" class="casting_box">
 
       <div class="casting_title">
-        铸造金额
+        {{ $t('casting_amount') }}
       </div>
       <van-field v-model="info.Amount" center clearable class="ftd-num-field F-Bold field-box" type="number"
         :placeholder="t('PleaseEnter')" @input="changeAmount">
@@ -29,7 +29,7 @@
       <p v-if="errorMessage" class="error_message">{{ errorMessage }}</p>
       <div class="line"></div>
       <div class="fast_casting_title">
-        快捷铸造
+        {{ $t('casting_quick') }}
       </div>
       <div class="fast_casting_box">
         <div :class="['fast_casting_item', item.active ? 'active' : '']" v-for="item in fastCastingList"
@@ -39,7 +39,7 @@
       </div>
       <div class="line"></div>
       <div class="fast_casting_title">
-        支付方式
+        {{ $t('casting_pay_method') }}
       </div>
       <div class="pay_box">
         <div :class="['pay_item']" @click="changePayType(1)">
@@ -53,7 +53,7 @@
           </span> {{ info.USDT }} USDT + {{ info.USDID }} USDID
         </div>
       </div>
-      <p class="balance_box_title">钱包余额</p>
+      <p class="balance_box_title">{{ $t('casting_wallet_balance') }}</p>
       <div class="balance_box">
         <div class="item-info">
           <p>
@@ -82,20 +82,20 @@
     <!-- 激活身份 -->
     <div v-if="tabList[1].active" class="activate_box">
       <div class="activate_title">
-        兑换码
+        {{ $t('casting_redeem_code') }}
       </div>
       <van-field v-model="info.exchangeCode" center clearable class="ftd-num-field F-Bold field-box" type="text"
         :placeholder="t('PleaseEnter')">
       </van-field>
       <van-button class="activate_btn F-Bold" @click="handleActivate">
-        兑换
+        {{ $t('casting_redeem') }}
       </van-button>
     </div>
 
 
     <div class="default-box">
       <div class="record-title">
-        铸造记录
+        {{ $t('casting_record') }}
       </div>
       <!-- 记录列表 -->
       <van-list v-if="recordList.length" v-model:loading="loading" :finished="finished" :finished-text="t('NoMore')"
@@ -107,13 +107,13 @@
                 <i>{{ formatDecimal(item.total_usd, 4) }} USDT</i>  <i v-if="item.usdid.greaterThan(0)"> | {{ formatDecimal(item.usdid, 4) }} USDID</i> 
               </span>
               <span class="status-text">
-                {{ item.status === 0 ? '区块链确认中' : '铸造成功' }}
+                {{ item.status === 0 ? $t('casting_pending') : $t('casting_success') }}
               </span>
             </div>
             <div class="hash-box">Hash: <span class="hash-text">{{ getStr(item.trx_id, 4, 8) }}</span> <img
                 src="@/assets/imgs/identitycasting/copy.png" alt="" class="copy-icon" @click="copyHash(item.trx_id)">
             </div>
-            <div class="time-box">铸造时间: {{ item.create_time ? store.lang === 'en'
+            <div class="time-box">{{ $t('casting_time') }} {{ item.create_time ? store.lang === 'en'
               ? getdata(item.create_time * 1000).langEnStr : getdata(item.create_time * 1000).timeDetail : '---' }}
             </div>
           </div>
@@ -188,17 +188,17 @@ const fastCastingList = ref([
     active: false,
   },
 ]);
-const tabList = ref([
+const tabList = computed(reactive(() => [
   {
-    name: '铸造身份',
+    name: t('casting_tab_mint'),
     active: true,
   },
   {
-    name: ' 激活身份',
+    name: t('casting_tab_activate'),
     active: false,
   }
-]);
-const errorMessage = ref('*请输入整百的数值');
+]));
+const errorMessage = ref(t('casting_input_hint'));
 const info = reactive({
   Amount: "",
   isSatisfy: false,
@@ -522,7 +522,7 @@ const toBuy = async () => {
     buyParams.trx_id = hash;
     const { code } = await buyDIDPower(buyParams);
     if (!code) {
-      showToastTip("success", '操作成功');
+      showToastTip("success", t('casting_op_success'));
       checkBalance();
       setTimeout(() => {
         params.start = 0;
@@ -531,7 +531,7 @@ const toBuy = async () => {
       }, 3000);
     }
   } catch (error) {
-    showToastTip("fail", '操作失败');
+    showToastTip("fail", t('casting_op_fail'));
     console.log(error)
     setTimeout(() => {
       closeToast();
@@ -615,21 +615,21 @@ const handleButtonClick = () => {
 
 const handleActivate = async () => {
   if (!info.exchangeCode) {
-    showToastTip("fail", '请输入兑换码');
+    showToastTip("fail", t('casting_input_code'));
     return;
   }
   const { code } = await exchange({
     exchange_code: info.exchangeCode
   });
   if (!code) {
-    showToastTip("success", '操作成功');
+    showToastTip("success", t('casting_op_success'));
     setTimeout(() => {
       params.start = 0;
       getPowerListData(2);
       getBalance();
     }, 3000);
   } else {
-    showToastTip("fail", '操作失败');
+    showToastTip("fail", t('casting_op_fail'));
   }
   console.log('handleActivate')
 }

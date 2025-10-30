@@ -2,7 +2,7 @@
   <div class="content-box">
     <div class="title-container">
       <div class="title F-Bold">
-        身份铸造
+        {{ $t('identity_title') }}
       </div>
       <img src="@/assets/imgs/identitycasting/tips.png" alt="" class="tips-icon" @click="openTipsDialog">
     </div>
@@ -10,8 +10,8 @@
       <div class="left">
         <img src="@/assets/imgs/identitycasting/peo_logo.png" alt="" class="peo-logo">
         <div>
-          <p class="info-item"><span class="title-text">身份算力</span> <span>{{formatDecimal(decimalParseToNumber(store.powerDetailData.user_identity_power, 18),4)}}</span></p>
-          <p class="info-item"><span class="title-text">身份积分</span> <span>{{101}}</span></p>
+          <p class="info-item"><span class="title-text">{{ $t('identity_power') }}</span> <span>{{formatDecimal(decimalParseToNumber(store.powerDetailData.user_identity_power, 18),4)}}</span></p>
+          <p class="info-item"><span class="title-text">{{ $t('identity_points') }}</span> <span>{{101}}</span></p>
         </div>
       </div>
       <div class="right">
@@ -19,15 +19,15 @@
       </div>
     </div>
     <div class="power-box">
-      <p><span class="title-text">身份算力奖励</span> <span>{{formatDecimal(decimalParseToNumber(store.powerDetailData.base_income, 18),4)}}</span></p>
+      <p><span class="title-text">{{ $t('identity_power_reward') }}</span> <span>{{formatDecimal(decimalParseToNumber(store.powerDetailData.base_income, 18),4)}}</span></p>
       <img src="@/assets/imgs/identitycasting/recoder.png" alt="" class="recoder-icon" @click="handleClickRecord(2)">
     </div>
     <div class="action-box">
       <p @click="router.push('/casting')">
-        <span>身份铸造</span>
+        <span>{{ $t('identity_tab_mint') }}</span>
       </p>
       <p @click="router.push('/gas')">
-        <span>GAS 支付</span>
+        <span>{{ $t('identity_tab_gas') }}</span>
       </p>
     </div>
   </div>
@@ -44,6 +44,8 @@ import { powerDetail, getRecordList } from "@/api";
 import { useStore } from '@/store/store';
 import { formatDecimal, decimalParseToNumber } from '@/utils';
 import Decimal from "decimal.js";
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 const router = useRouter();
 const store = useStore();
 const tipsDialog = ref<InstanceType<typeof TipsDialog>>();
@@ -57,36 +59,36 @@ const recordInfo = ref({
     symbol: '',
   }
 });
-const tipsContent = ref({
-  title: '身份铸造',
+const tipsContent = computed(reactive(() => ({
+  title: t('identity_title'),
   content: [
     {
-      subtitle: '数字身份:',
-      content: '完成 KYC 认证后，即可领取多国数字身份，并享受 DID 联盟提供的多种数字服务。',
+      subtitle: t('identity_card_identity'),
+      content: t('identity_card_identity_desc'),
     },
     {
-      subtitle: '身份算力:',
-      content: '身份算力可以获取DID奖励，身份算力越多，获取的奖励越多。',
+      subtitle: t('identity_card_power'),
+      content: t('identity_card_power_desc'),
     },
     {
-      subtitle: '身份积分:',
-      content: '铸造身份即可获得身份积分，积分可兑换 DID 联盟提供的数字身份权益或实体产品。',
+      subtitle: t('identity_card_points'),
+      content: t('identity_card_points_desc'),
     },
   ]
-});
+})));
 const openTipsDialog = () => {
   tipsDialog.value?.open();
 }
 const handleClickRecord = (type: number) => {
   if (type === 1) {
-    recordInfo.value.title = '身份算力记录';
+    recordInfo.value.title = t('identity_record_power');
     recordInfo.value.params.module = '';
     recordInfo.value.params.symbol = '';
   } else if (type === 2) {
     recordInfo.value.api = getRecordList;
     recordInfo.value.params.module = 'BaseIncome';
     recordInfo.value.params.symbol = 'DID';
-    recordInfo.value.title = '身份算力奖励记录';
+    recordInfo.value.title = t('identity_record_power_reward');
   }
   showRecordDialog.value = true;
 }

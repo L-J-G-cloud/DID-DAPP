@@ -30,7 +30,7 @@
             <div v-if="showWalletDropdown" class="wallet-dropdown">
               <div class="dropdown-item" @click="logout">
                 <img src="@/assets/imgs/header/exit.png" alt="" class="logout-icon">
-                <span>{{ t('Logout') }}</span>
+                <span>{{ t('Exit') }}</span>
               </div>
             </div>
           </div>
@@ -103,9 +103,9 @@
         <img src="@/assets/imgs/identitycasting/close_icon.png" alt="" class="title-close-icon" @click="handleClickClose" />
       </div>
       <div class="product-dialog-content">
-        <h4>产品中心温馨提示</h4>
-        <p>消耗 100 身份积分 完成数字身份铸造，即刻开启 DID 联盟全系能力与服务。</p>
-        <p class="F-Bold btns" @click="handleClickBtns()">{{ isIntegral ? '立即前往' : '获取身份积分' }}</p>
+        <h4>{{ t('head_tip_title') }}</h4>
+        <p>{{ t('head_tip_desc') }}</p>
+        <p class="F-Bold btns" @click="handleClickBtns()">{{ isIntegral ? t('head_btn_go') : t('head_btn_get_points') }}</p>
       </div>
     </template>
   </Dialog>
@@ -148,37 +148,37 @@ const showWalletDropdown = ref(false);
 const { account, token } = storeToRefs(store);
 const isIntegral = ref(true);
 const isConsumeIntegral = ref(false);
-const menuList = ref([
+const menuList = computed(reactive(() => [
   {
     icon: 'menu_0',
-    name: '身份仪表盘 ',
+    name: t('head_menu_dashboard'),
     router: '/dashboard'
   },
   {
     icon: 'menu_1',
-    name: '身份铸造',
+    name: t('head_menu_mint'),
     router: '/identitycasting'
   },
   {
     icon: 'menu_2',
-    name: '产品中心',
+    name: t('head_menu_product'),
     router: '/product'
   },
   {
     icon: 'menu_3',
-    name: '交易中心',
+    name: t('head_menu_trade'),
     router: '',
     link: 'https://swap.42x.finance'
   },
   {
     icon: 'menu_4',
-    name: '知识中心',
+    name: t('head_menu_knowledge'),
     router: '/knowledge',
     tw_link:'https://www.notion.so/didone/DID-24d8a457d08680988e02d26c0b789a8f',
     en_link:'https://www.notion.so/didone/Global-Digital-Identity-Alliance-2868a457d0868033a62bf0150639ebe8',
     ko_link:'https://www.notion.so/didone/2958a457d08680e6bcf3eabdc4d064b8',
   }
-])
+]))
 
 const menuFooterList = ref(['https://x.com/didone_official', 'https://didone.gitbook.io/did/', 'https://linktr.ee/did_one', 'https://medium.com/@didone_official', 'https://didone.org/'])
 

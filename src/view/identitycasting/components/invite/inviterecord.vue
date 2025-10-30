@@ -3,7 +3,7 @@
     <div class="header">
       <div class="title-line d-flex justify-content-center">
         <div class="title">
-          <span>{{ currentserId ? '邀请记录' : '我的邀请' }}</span>
+          <span>{{ currentserId ? $t('invite_title') : $t('invite_my') }}</span>
           <img src="@/assets/imgs/identitycasting/back.png" alt="" class="back-icon" @click="router.back()">
         </div>
       </div>
@@ -15,7 +15,7 @@
         <div class="stats-icon">
           <img src="@/assets/imgs/identitycasting/effect-user-avatar.png" alt="" class="icon-img">
         </div>
-        <div class="stats-text">已邀请用户</div>
+        <div class="stats-text">{{ $t('invite_invited_users') }}</div>
         <div class="stats-number">{{ inviteStats.totalInvited || 0 }}</div>
       </div>
       <div class="stats-line"></div>
@@ -23,7 +23,7 @@
         <div class="stats-icon">
           <img src="@/assets/imgs/identitycasting/effect-user.png" alt="" class="icon-img">
         </div>
-        <div class="stats-text">有效用户</div>
+        <div class="stats-text">{{ $t('invite_valid_users') }}</div>
         <div class="stats-number">{{ inviteStats.validUsers || 0 }}</div>
       </div>
     </div>
@@ -32,7 +32,7 @@
     <div class="address-section">
       <div class="section-title">
         <div class="title-bar"></div>
-        <span>地址列表</span>
+        <span>{{ $t('invite_address_list') }}</span>
       </div>
       <!-- van-list 组件始终渲染，确保下拉加载功能正常 -->
       <van-list v-model:loading="loading" :finished="finished" :finished-text="t('NoMore')"
@@ -40,7 +40,7 @@
         <div v-if="addressList.length > 0" class="address-items">
           <div class="address-item" v-for="(item, index) in addressList" :key="index">
               <div class="item-row">
-                <span class="label">钱包地址</span>
+                <span class="label">{{ $t('invite_wallet_address') }}</span>
                 <div class="address-content">
                   <img :src="item.is_valid?selectedIcon:noVliadIcon" alt="" class="check-icon">
                   <span class="address-text" @click="router.push(`/inviterecord/${item.id}`)">{{ getStr(item.address, 6, 6) }}</span>
@@ -50,14 +50,14 @@
               </div>
 
               <div class="item-row">
-                <span class="label">注册时间</span>
+                <span class="label">{{ $t('invite_register_time') }}</span>
                 <span class="value">{{ item.create_time ? (store.lang === 'en'
                   ? getdata(item.create_time * 1000).langEnStr
                   : getdata(item.create_time * 1000).timeDetail) : '---' }}</span>
               </div>
 
               <div class="item-row">
-                <span class="label">身份算力</span>
+                <span class="label">{{ $t('invite_identity_power') }}</span>
                 <span class="value">{{ formatDecimal(decimalParseToNumber(item.power, 18),4) || '0' }}</span>
               </div>
             </div>
@@ -151,7 +151,7 @@ const loadAddressList = async () => {
 // 复制地址
 const copyAddress = (address: string) => {
   CopyToClipBoard(address);
-  showToastIcon('地址已复制', 'success');
+  showToastIcon(t('invite_copied'), 'success');
 };
 
 onMounted(() => {

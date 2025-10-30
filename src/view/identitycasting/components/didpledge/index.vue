@@ -2,27 +2,27 @@
     <div class="content-box">
         <div class="title-container">
             <div class="title F-Bold">
-                DID质押
+                {{ $t('pledge_title') }}
             </div>
             <img src="@/assets/imgs/identitycasting/tips.png" alt="" class="tips-icon" @click="openTipsDialog">
         </div>
         <div class="info-box">
             <div class="top">
-                <p class="title-text">个人质押</p>
+                <p class="title-text">{{ $t('pledge_personal') }}</p>
                 <p class="F-Bold text-white">{{formatDecimal(decimalParseToNumber(store.powerDetailData.user_deposit_did, 18),4)}} DID</p>
             </div>
             <div class="bottom">
-                <p class="info-item">质押权重 <span class="F-Bold text-white">{{formatDecimal(decimalParseToNumber(store.powerDetailData.deposit_result_user, 18),4)}}</span></p>
-                <p class="info-item">权重占比 <span class="F-Bold text-white">{{formatDecimal(store.powerDetailData.deposit_result_percent,2)}}%</span></p>
+                <p class="info-item">{{ $t('pledge_weight') }} <span class="F-Bold text-white">{{formatDecimal(decimalParseToNumber(store.powerDetailData.deposit_result_user, 18),4)}}</span></p>
+                <p class="info-item">{{ $t('pledge_weight_percent') }} <span class="F-Bold text-white">{{formatDecimal(store.powerDetailData.deposit_result_percent,2)}}%</span></p>
             </div>
         </div>
         <div class="action-box">
             <div class="action-left"  @click="showRecordDialog=true">
-                <p>质押奖励</p>
+                <p>{{ $t('pledge_reward') }}</p>
                 <p class="F-Bold reward-box">{{ formatDecimal(decimalParseToNumber(store.powerDetailData.deposit_income, 18),4) }} DID  <img src="@/assets/imgs/identitycasting/arr_right.png" alt="" class=""></p>
             </div>
             <div class="action-right F-Bold" @click="router.push('/pledge-did')">
-                质押
+                {{ $t('pledge_action') }}
             </div>
         </div>
     </div>
@@ -38,45 +38,47 @@ import { powerList ,getRecordList} from "@/api";
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store/store';
 import { formatDecimal, decimalParseToNumber } from '@/utils';
+import { useI18n } from 'vue-i18n';
 const router = useRouter();
+const { t } = useI18n();
 const store = useStore();
 const tipsDialog = ref<InstanceType<typeof TipsDialog>>();
 const showRecordDialog = ref(false);
-const recordInfo = ref({
-  title: '质押奖励记录',
+const recordInfo = computed(reactive(() => ({
+  title: t('pledge_record_title'),
   api: getRecordList,
   params: {
     limit: 10,
     module: 'DepositIncome',
     symbol: 'DID',
   }
-});
-const tipsContent = ref({
-  title: 'DID质押',
+})));
+const tipsContent = computed(reactive(() => ({
+  title: t('pledge_title'),
   content: [
     {
-      content: '每次质押都会触发收益分配。',
+      content: t('pledge_desc_1'),
     },
     {
-      content: '您的质押奖励取决于三个因素：投入金额、质押时间、算力大小',
+      content: t('pledge_desc_2'),
     },
     {
-      content: '质押权重 = 个人算力 × 金额系数 × 时间系数',
+      content: t('pledge_desc_3'),
     },
     {
-      content: '金额系数：您的质押金额 ÷ 所有用户质押金额中位数',
+      content: t('pledge_desc_4'),
     },
     {
-      content: '时间系数：您的质押周期 ÷ 所有用户质押周期中位数',
+      content: t('pledge_desc_5'),
     },
     {
-      content: '每日奖励：您的权重 ÷ 质押加速池权重 × 质押池奖励',
+      content: t('pledge_desc_6'),
     },
     {
-      content: '质押奖励 ： 质押池权重 / 全网质押池权重 * 全网质押池奖励',
+      content: t('pledge_desc_7'),
     }
   ]
-});
+})));
 const openTipsDialog = () => {
   tipsDialog.value?.open();
 }

@@ -3,7 +3,7 @@
         <!-- 头部区域 -->
         <div class="header">
             <img src="@/assets/imgs/identitycasting/data.png" alt="">
-            <span class="title F-Bold">全网趋势图</span>
+            <span class="title F-Bold">{{ $t('dashboard_trend_title') }}</span>
         </div>
 
         <!-- 图表区域 -->
@@ -11,7 +11,7 @@
             <!-- 全网身份算力图表 -->
             <div class="chart-section">
                 <div class="chart-title">
-                    ⚡ 全网身份算力
+                    ⚡ {{ $t('chart_identity_power') }}
                 </div>
                 <div class="chart-container" ref="identityPowerChartRef"></div>
             </div>
@@ -19,7 +19,7 @@
             <!-- 全网验证贡献图表 -->
             <div class="chart-section">
                 <div class="chart-title">
-                    🔍 全网验证贡献
+                    🔍 {{ $t('chart_verification_contribution') }}
                 </div>
                 <div class="chart-container" ref="verificationContributionChartRef"></div>
             </div>
@@ -27,7 +27,7 @@
             <!-- 全网质押权重图表 -->
             <div class="chart-section">
                 <div class="chart-title">
-                    🔒 全网质押权重
+                    🔒 {{ $t('chart_staking_weight') }}
                 </div>
                 <div class="chart-container" ref="stakingWeightChartRef"></div>
             </div>
@@ -38,6 +38,7 @@
 <script setup lang="ts">
 import * as echarts from 'echarts'
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 // 图表引用
 const identityPowerChartRef = ref<HTMLElement>()
@@ -48,6 +49,7 @@ const stakingWeightChartRef = ref<HTMLElement>()
 let identityPowerChart: echarts.ECharts | null = null
 let verificationContributionChart: echarts.ECharts | null = null
 let stakingWeightChart: echarts.ECharts | null = null
+const { t } = useI18n()
 
 // 模拟数据生成函数
 function generateData(days: number, baseValue: number, volatility: number) {
@@ -171,19 +173,19 @@ function createChartOption(data: number[], dates: string[], title: string, color
 function initAllCharts() {
     if (identityPowerChartRef.value) {
         identityPowerChart = echarts.init(identityPowerChartRef.value)
-        const option1 = createChartOption(data100d.identityPower.data, data100d.identityPower.dates, '全网身份算力', '#667eea')
+        const option1 = createChartOption(data100d.identityPower.data, data100d.identityPower.dates, t('chart_identity_power'), '#667eea')
         identityPowerChart.setOption(option1)
     }
     
     if (verificationContributionChartRef.value) {
         verificationContributionChart = echarts.init(verificationContributionChartRef.value)
-        const option2 = createChartOption(data100d.verificationContribution.data, data100d.verificationContribution.dates, '全网验证贡献', '#26a17b')
+        const option2 = createChartOption(data100d.verificationContribution.data, data100d.verificationContribution.dates, t('chart_verification_contribution'), '#26a17b')
         verificationContributionChart.setOption(option2)
     }
     
     if (stakingWeightChartRef.value) {
         stakingWeightChart = echarts.init(stakingWeightChartRef.value)
-        const option3 = createChartOption(data100d.stakingWeight.data, data100d.stakingWeight.dates, '全网质押权重', '#ffd700')
+        const option3 = createChartOption(data100d.stakingWeight.data, data100d.stakingWeight.dates, t('chart_staking_weight'), '#ffd700')
         stakingWeightChart.setOption(option3)
     }
 }
@@ -199,17 +201,17 @@ function refreshData() {
     
     // 更新图表
     if (identityPowerChart) {
-        const option1 = createChartOption(newData.identityPower.data, newData.identityPower.dates, '全网身份算力', '#667eea')
+        const option1 = createChartOption(newData.identityPower.data, newData.identityPower.dates, t('chart_identity_power'), '#667eea')
         identityPowerChart.setOption(option1)
     }
     
     if (verificationContributionChart) {
-        const option2 = createChartOption(newData.verificationContribution.data, newData.verificationContribution.dates, '全网验证贡献', '#26a17b')
+        const option2 = createChartOption(newData.verificationContribution.data, newData.verificationContribution.dates, t('chart_verification_contribution'), '#26a17b')
         verificationContributionChart.setOption(option2)
     }
     
     if (stakingWeightChart) {
-        const option3 = createChartOption(newData.stakingWeight.data, newData.stakingWeight.dates, '全网质押权重', '#ffd700')
+        const option3 = createChartOption(newData.stakingWeight.data, newData.stakingWeight.dates, t('chart_staking_weight'), '#ffd700')
         stakingWeightChart.setOption(option3)
     }
 }

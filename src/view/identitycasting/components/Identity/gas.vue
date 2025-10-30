@@ -3,16 +3,16 @@
         <div class="header">
             <div class="title-line d-flex justify-content-center">
                 <div class="title">
-                    <span>{{ 'GAS费用支付' }}</span>
+                    <span>{{ $t('gas_payment_title') }}</span>
                     <img src="@/assets/imgs/identitycasting/back.png" alt="" class="back-icon" @click="router.back()">
                 </div>
             </div>
         </div>
         <div class="gas-tip-box">
-            <p>即将到期的算力</p>
+            <p>{{ $t('expiring_power') }}</p>
             <p class="hash-text F-Bold"><span>0xa7...69d2fe0d</span> <img :src="copy" alt="" class="copy-icon"
                     @click="handleCopyHash('0xa7...69d2fe0d')"></p>
-            <p class="time-text">剩余支付时间 <span class="F-Bold text-white">265天</span></p>
+            <p class="time-text">{{ $t('remaining_payment_time') }} <span class="F-Bold text-white">265{{ $t('days') }}</span></p>
             <div class="progress-box">
                 <div class="progress-bar">
                     <div class="progress-fill" :style="{ width: progressWidth + '%' }">
@@ -20,21 +20,21 @@
                     </div>
                 </div>
             </div>
-            <p class="gas-tip-text">激活时间补偿算力，提升收益 </p>
+            <p class="gas-tip-text">{{ $t('activate_time_compensation_tip') }} </p>
         </div>
         <div class="gas-detail-box">
             <div class="detail-title">
-                费用明细
+                {{ $t('fee_details') }}
             </div>
             <div class="list-box">
                 <p class="header-title">
-                    <span>身份算力列表</span>
-                    <span class="d-flex align-items-center" @click="handleSelectAll"> <i class="text-white">全选</i> <img
+                    <span>{{ $t('identity_power_list') }}</span>
+                    <span class="d-flex align-items-center" @click="handleSelectAll"> <i class="text-white">{{ $t('select_all') }}</i> <img
                             :src="allSelected ? selected : select" alt="" class="selected-icon"></span>
                 </p>
                 <div class="list-item" v-for="(item, index) in powerList" :key="index">
                     <div class="d-flex align-items-center justify-content-between">
-                        <p class="power-text">算力 ：<span class="power-value F-Bold">{{ item.power }}</span></p>
+                        <p class="power-text">{{ $t('power_colon') }}<span class="power-value F-Bold">{{ item.power }}</span></p>
                         <img :src="item.isSelected ? selected : select" alt="" class="selected-icon"
                             @click="handleSelect(item)">
                     </div>
@@ -43,7 +43,7 @@
                                 class="copy-icon" @click="handleCopyHash(item.hash)"></p>
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
-                        <p class="time-text">铸造时间: <span class="">{{ item.time }}</span></p>
+                        <p class="time-text">{{ $t('casting_time') }} <span class="">{{ item.time }}</span></p>
                         <p class="gas-text">GAS: <span class="text-white">{{ item.GAS }}</span></p>
                     </div>
                 </div>
@@ -51,19 +51,19 @@
             <!-- 数据摘要组件 -->
             <div class="data-summary">
                 <div class="summary-item">
-                    <span class="summary-label">原有身份算力</span>
+                    <span class="summary-label">{{ $t('original_identity_power') }}</span>
                     <span class="summary-value">{{ originalHashrate }}</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">时间算力补偿</span>
+                    <span class="summary-label">{{ $t('time_power_compensation') }}</span>
                     <span class="summary-value">{{ timeCompensation }}</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">支付比例</span>
+                    <span class="summary-label">{{ $t('payment_ratio') }}</span>
                     <span class="summary-value">{{ paymentRatio }}%</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label text-white">实际支付金额</span>
+                    <span class="summary-label text-white">{{ $t('actual_payment_amount') }}</span>
                     <span class="summary-value highlight">{{ actualPayment }} USDT</span>
                 </div>
             </div>
@@ -71,7 +71,7 @@
 
          <div class="pay-box">
              <div class="detail-title">
-                 支付方式
+                 {{ $t('payment_method') }}
              </div>
              <div class="payment-content">
                  <!-- 货币选择 -->
@@ -90,7 +90,7 @@
                  
                  <!-- 钱包余额 -->
                  <div class="wallet-balance">
-                     钱包余额: {{ walletBalance }} <span class="text-white">{{ selectedCurrency }}</span>
+                    {{ $t('casting_wallet_balance') }}: {{ walletBalance }} <span class="text-white">{{ selectedCurrency }}</span>
                  </div>
                  
                  <!-- 重要提醒 -->
@@ -99,16 +99,16 @@
                          <div class="warning-icon">
                             <img src="@/assets/imgs/identitycasting/warning.png" alt="" class="warning-icon-img">
                          </div>
-                         <span class="reminder-title">重要提醒</span>
+                        <span class="reminder-title">{{ $t('important_reminder') }}</span>
                      </div>
                      <div class="reminder-text">
-                         个人算力超过 365 天未支付将清零。系统提供 7 天缓冲期, 及时支付可激活最新时间算力补偿。
+                        {{ $t('important_reminder_text') }}
                      </div>
                  </div>
                  
                  <!-- 支付授权按钮 -->
                  <div class="payment-button" @click="handlePayment">
-                     支付授权
+                    {{ $t('payment_authorize') }}
                  </div>
              </div>
          </div>
@@ -211,20 +211,20 @@ const handlePayment = () => {
 };
 
 // 提示信息数据
-const tipsData = ref([
+const tipsData = computed(reactive(() => [
     {
-        title: '为什么需要支付Gas费用?',
-        content: '支付 Gas 费用用于维持身份算力池的持续运作及网络算力维护,及时支付可在365天内保留算力,并激活最新时间算力补偿。'
+        title: t('gas_tip_title_1'),
+        content: t('gas_tip_content_1')
     },
     {
-        title: '支付比例计算公式',
-        content: '支付比例=铸造数字身份的36.5%÷365×支付当天的天数越早支付→支付比例低;越晚支付→支付比例高。 <br>提前支付可及时激活时间算力补偿,按支付当天算力增加个人算力值。'
+        title: t('gas_tip_title_2'),
+        content: t('gas_tip_content_2')
     },
     {
-        title: '时间算力补偿',
-        content: '时间算力补偿=基础算力×铸造身份当天系统运行天数×0.1% <br>时间算力补偿更新: <br>支付 Gas 费用后,系统会按支付当天计算时间补偿算力,并自动更新您的算力,让您获得更高的个人算力值。'
+        title: t('gas_tip_title_3'),
+        content: t('gas_tip_content_3')
     }
-]);
+]));
 
 
 // 进度条宽度控制

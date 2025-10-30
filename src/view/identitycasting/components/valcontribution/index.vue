@@ -2,23 +2,23 @@
     <div class="content-box">
         <div class="title-container">
             <div class="title F-Bold">
-                验证者贡献
+                {{ $t('val_title') }}
             </div>
             <img src="@/assets/imgs/identitycasting/tips.png" alt="" class="tips-icon" @click="openTipsDialog">
         </div>
         <div class="node-box"  v-if="!store.userInfo.user_data.node_type">
             <div class="title-box">
-                <span>节点释放</span>
+                <span>{{ $t('val_node_unlock') }}</span>
                 <img src="@/assets/imgs/identitycasting/recoder.png" alt="" class="recoder-icon" @click="showRecoderType(1)">
             </div>
             <div class="node-content-box">
                 <div class="content-item">
                     <div class="content-item-left">
-                        <p>待释放 DID</p>
+                        <p>{{ $t('val_to_unlock_did') }}</p>
                         <p class="F-Bold text-white">{{ nodeInfo.unlock_did }}</p>
                     </div>
                     <div class="content-item-right">
-                        <p>已释放 DID</p>
+                        <p>{{ $t('val_released_did') }}</p>
                         <p class="F-Bold text-white">{{ nodeInfo.release_did }}</p>
                     </div>
                 </div>
@@ -28,33 +28,33 @@
                             <div class="light-bar" :class="{ 'animate': isLightBarActive }"></div>
                         </div>
                     </div>
-                    <p class="progress-text">释放进度 <span>{{nodeInfo.progress}}%</span></p>
+                    <p class="progress-text">{{ $t('val_unlock_progress') }} <span>{{nodeInfo.progress}}%</span></p>
                 </div>
             </div>
-            <p class="tips-text">注：新增个人验证贡献 100 ，解锁1个DID</p>
+            <p class="tips-text">{{ $t('val_unlock_tips') }}</p>
         </div>
         <div class="verify-box">
             <div class="title-box">
-                <span>个人验证贡献奖励</span>
+                <span>{{ $t('val_personal_reward') }}</span>
                 <img src="@/assets/imgs/identitycasting/recoder.png" alt="" class="recoder-icon" @click="showRecoderType(2)">
             </div>
             <div class="verify-content-box">
                 <span class="verify-amount-text F-Bold">{{formatDecimal(decimalParseToNumber(store.powerDetailData.dynamic_income, 18),4)}} DID</span>
-                <span class="verify-detail-text" @click="router.push('/valcontribution-details')">验证详情</span>
+                <span class="verify-detail-text" @click="router.push('/valcontribution-details')">{{ $t('val_detail_title') }}</span>
             </div>
-            <p class="tips-text">注：验证数据统计为近{{store.powerDetailData.dynamic_statics_day}}天</p>
+            <p class="tips-text">{{ $t('val_recent_days_prefix') }}{{store.powerDetailData.dynamic_statics_day}}{{ $t('days') }}</p>
         </div>
 
         <div class="verify-box">
             <div class="title-box">
-                <span>个人验证贡献加成奖励</span>
+                <span>{{ $t('val_personal_bonus_reward') }}</span>
                 <img src="@/assets/imgs/identitycasting/recoder.png" alt="" class="recoder-icon" @click="showRecoderType(3)">
             </div>
             <div class="verify-content-box">
                 <span class="verify-amount-text F-Bold">{{formatDecimal(decimalParseToNumber(store.powerDetailData.ref_usdt_income, 18),4)}} DID | {{formatDecimal(decimalParseToNumber(store.powerDetailData.ref_usdid_income, 18),4)}} USDID</span>
-                <span class="verify-detail-text" @click="router.push('/valcontribution-plusedetails')">验证详情</span>
+                <span class="verify-detail-text" @click="router.push('/valcontribution-plusedetails')">{{ $t('val_detail_title') }}</span>
             </div>
-            <p class="tips-text">注：验证数据统计为{{store.lang === 'en' ? getdata(store.powerDetailData.ref_reward_end_time*10001).timeDetail : getdata(store.powerDetailData.ref_reward_end_time*1000).time}}至今</p>
+            <p class="tips-text">{{ $t('val_stat_from') }}{{store.lang === 'en' ? getdata(store.powerDetailData.ref_reward_end_time*10001).timeDetail : getdata(store.powerDetailData.ref_reward_end_time*1000).time}}{{ $t('val_until_now') }}</p>
         </div>
     </div>
     <TipsDialog ref="tipsDialog" :tipsContent="tipsContent" />
@@ -66,6 +66,7 @@ import { getdata } from '@/utils';
 import TipsDialog from '@/view/identitycasting/components/TipsDialog.vue';
 import RecordDialog from '@/view/identitycasting/components/RecordDialog.vue';
 import { onMounted, ref } from "vue";
+import { useI18n } from 'vue-i18n';
 import Decimal from 'decimal.js';
 import { powerList,getRecordList} from "@/api";
 import { useRouter } from 'vue-router';
@@ -73,25 +74,26 @@ import { useStore } from '@/store/store';
 import { decimalParseToNumber, formatDecimal } from '@/utils';
 const router = useRouter();
 const store = useStore();
+const { t } = useI18n();
 const tipsDialog = ref<InstanceType<typeof TipsDialog>>();
 const showRecordDialog = ref(false);
-const verifyRecordInfo = ref({
-  title: '验证贡献记录',
+const verifyRecordInfo = computed(reactive(() => ({
+  title: t('val_record_title'),
   api: getRecordList,
   params: {
     limit: 10,
     module: '',
     symbol: 'DID,USDID',
   }
-});
-const tipsContent = ref({
-  title: '验证贡献',
+})));
+const tipsContent = computed(reactive(() => ({
+  title: t('val_title'),
   content: [
     {
-      content: '验证者通过邀请更多身份加入 DID 网络，提供验证支持，稳固数字身份并维护网络安全。贡献越高，空投奖励越丰厚，实现安全与激励的正向循环。',
+      content: t('val_intro'),
     },
   ]
-});
+})));
 
 const nodeInfo = ref({
   total_lock_did: 0,
@@ -102,19 +104,18 @@ const nodeInfo = ref({
 
 const showRecoderType = (type: number) => {
   if(type === 1) {
-    verifyRecordInfo.value.title = '节点释放记录';
+    verifyRecordInfo.value.title = t('val_node_unlock_record');
     verifyRecordInfo.value.params.module = 'Unlock';
     verifyRecordInfo.value.params.symbol = 'DID';
   } else if(type === 2) {
-    verifyRecordInfo.value.title = '贡献奖励记录';
+    verifyRecordInfo.value.title = t('val_reward_record');
     verifyRecordInfo.value.params.module = 'DynamicIncome';
     verifyRecordInfo.value.params.symbol = 'DID';
   } else {
-    verifyRecordInfo.value.title = '加成奖励记录';
+    verifyRecordInfo.value.title = t('val_bonus_reward_record');
     verifyRecordInfo.value.params.module = 'RefIncome';
     verifyRecordInfo.value.params.symbol = 'DID,USDID';
   }
-  console.log(verifyRecordInfo.value.params);
   showRecordDialog.value = true;
 }
 
